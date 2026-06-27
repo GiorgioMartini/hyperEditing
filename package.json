@@ -6,13 +6,19 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "preflight": "node scripts/preflight.mjs",
-    "preflight:all": "for d in video-projects/*/; do node scripts/preflight.mjs \"$d\" || true; done"
+    "preflight:all": "for d in video-projects/*/; do node scripts/preflight.mjs \"$d\" || true; done",
+    "hyperframes": "hyperframes",
+    "hf:doctor": "hyperframes doctor",
+    "hf:lint": "hyperframes lint",
+    "hf:preview": "hyperframes preview",
+    "pipeline": "cd pipeline && npm run pipeline --"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "hyperframes": "^0.7.5",
     "playwright": "^1.59.1"
   }
 }

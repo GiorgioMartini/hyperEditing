@@ -81,6 +81,7 @@ Hyperframes Editor/
 ├── CLAUDE.md, AGENTS.md, DESIGN.ais-example.md         ← workspace docs
 ├── MOTION_PHILOSOPHY.md                    ← gold-standard motion-graphics aesthetic (READ before brainstorming)
 ├── package.json, node_modules/              ← workspace tooling
+├── pipeline/ + PIPELINE.md                   ← AI avatar → HyperFrames pipeline (npm run pipeline)
 ├── .claude/                                  ← skills + plugin config
 ├── assets/                                   ← shared assets (AIS brand, music)
 └── video-projects/                           ← one folder per video
@@ -99,6 +100,8 @@ Each project under `video-projects/<name>/` is a self-contained Hyperframes proj
 - `renders/` — render outputs for this project (gitignored)
 - `hyperframes.json` — CLI config (registry URL, paths — all relative to the project folder)
 - `meta.json` — project metadata (id, name, dimensions, fps)
+- (optional) `project.json` — pipeline config when generated via `npm run pipeline` (YouTube URL, caption/backdrop options)
+- (optional) `processed/` — pipeline cache (gitignored): transparent webm, transcript, visual beats
 - (optional) `STORYBOARD.md`, `scripts/`, etc. — anything project-specific
 
 ### Always run the CLI from inside the project folder
@@ -120,12 +123,15 @@ The CLI reads `hyperframes.json`/`meta.json` from the current directory and reso
 4. Pull in any shared brand assets the project needs (e.g. `cp ../../assets/brand-tokens.css ../../assets/AIS\ Logo\ PNG.png assets/`)
 5. Build the composition; lint + render from inside this folder
 
+**Alternative — AI pipeline:** `npm run pipeline -- --project <slug> --input path/to/avatar.mov` scaffolds backdrop, captions (64px / 48% width default), B-roll, and MG. See `PIPELINE.md`. Pipeline output still goes through the same lint → preview → render loop above.
+
 ### What lives at the workspace root
 
 - **Motion-graphics philosophy:** `MOTION_PHILOSOPHY.md` (gold-standard aesthetic, deconstructed Infinite Payments spot — read before brainstorming any composition)
 - Shared brand source-of-truth: `DESIGN.ais-example.md` (AIS brand spec — kept as a worked example; students should write their own `DESIGN.md` for their brand), root `assets/` (AIS Logo PNG, brand-tokens.css, AIS Background.png) — copy into a project's `assets/` when needed
 - Shared raw-recording stash: large source MP4s/MP3s that aren't yet assigned to a project (e.g. raw lesson recordings, license-free music) can sit at root until they're moved into a project's `assets/`
 - Tooling: `node_modules/`, `package.json`, `.claude/`, `.gitignore`, `skills-lock.json`
+- **AI video pipeline:** `pipeline/` (TypeScript stages + MG templates), `PIPELINE.md` (quick start). Does not invoke `.claude/skills/` — skills are for manual authoring only.
 
 ## Render Contract (the must-dos and must-not-dos)
 

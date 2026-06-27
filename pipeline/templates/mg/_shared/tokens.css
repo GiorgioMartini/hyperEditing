@@ -1,0 +1,8 @@
+/* Design tokens — MOTION_PHILOSOPHY palette defaults */
+[data-composition-id="{{compositionId}}"] {
+  --mg-accent: {{accentColor}};
+  --mg-font: {{fontFamily}};
+  --mg-chrome-top: #ffffff;
+  --mg-chrome-bottom: #888888;
+  --mg-glow: rgba(255, 51, 51, 0.45);
+}

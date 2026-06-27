@@ -1,0 +1,80 @@
+<!-- Recipe: MOTION_PHILOSOPHY §3.3 stat callout + §3.2 grid shell -->
+<template id="mg-stat-callout-template">
+  <div
+    data-composition-id="{{compositionId}}"
+    data-start="0"
+    data-width="{{width}}"
+    data-height="{{height}}"
+    data-duration="{{duration}}"
+  >
+    <div class="mg-stage">
+      <div class="mg-grid-floor"></div>
+      <div class="mg-panel">
+        <div class="mg-content">
+          <div class="stat-headline chrome-text" id="stat-headline">{{headline}}</div>
+          <div class="stat-subtext accent-text" id="stat-subtext">{{subtext}}</div>
+        </div>
+      </div>
+      <div class="mg-vignette"></div>
+      <div class="mg-grain"></div>
+    </div>
+
+    <style>
+      {{sharedStyles}}
+      [data-composition-id="{{compositionId}}"] {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="{{compositionId}}"] .stat-headline {
+        font-size: 96px;
+        line-height: 1;
+        opacity: 0;
+        transform: scale(0.7);
+      }
+      [data-composition-id="{{compositionId}}"] .stat-subtext {
+        margin-top: 12px;
+        font-size: 28px;
+        opacity: 0;
+        transform: translateY(16px);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const compId = "{{compositionId}}";
+        const dur = {{duration}};
+        const tl = gsap.timeline({ paused: true });
+        const root = '[data-composition-id="' + compId + '"]';
+
+        tl.fromTo(root + ' .stat-headline',
+          { opacity: 0, scale: 0.7 },
+          { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(2.5)' },
+          0.15
+        );
+        tl.fromTo(root + ' .stat-subtext',
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' },
+          0.45
+        );
+        tl.to(root + ' .mg-grid-floor',
+          { backgroundPositionY: '-=40', duration: dur - 0.5, ease: 'none' },
+          0.2
+        );
+        tl.to(root + ' .stat-headline',
+          { opacity: 0, scale: 0.92, duration: 0.3, ease: 'power2.in' },
+          dur - 0.45
+        );
+        tl.to(root + ' .stat-subtext',
+          { opacity: 0, duration: 0.25 },
+          dur - 0.4
+        );
+        tl.set({}, {}, dur);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines[compId] = tl;
+      })();
+    </script>
+  </div>
+</template>

@@ -21,10 +21,21 @@
       "sourceType": "github",
       "computedHash": "187cb9060bc904c44e9a5f525ef2489b9750d398f7b82efd06568726db4fa2a4"
     },
+    "video-use": {
+      "source": "browser-use/video-use",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "8e9e08be507785a1850779a4c91f76124ca24df644becc2122bc8f0fd3ff6f80"
+    },
     "website-to-hyperframes": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",
       "computedHash": "94e81e4b58af16e09f9ad09bf16700c1e154d20fd74e4cf2b5c8e571f75ba393"
+    },
+    "video-use": {
+      "source": "browser-use/video-use",
+      "sourceType": "github",
+      "computedHash": "cf12ac3"
     }
   }
 }

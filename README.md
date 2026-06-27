@@ -55,6 +55,8 @@ hyperframes-editor/
 │   ├── AIS Brand Guideline Small.jpg
 │   └── brand-tokens.css         ← CSS custom props every comp can import
 ├── docs/                        ← longer-form specs + plans
+├── pipeline/                    ← AI avatar → HyperFrames pipeline (see PIPELINE.md)
+├── PIPELINE.md                  ← pipeline quick start
 ├── scripts/                     ← workspace-level preflight scripts
 ├── .claude/                     ← Claude Code skills (drop-in slash commands)
 │   ├── launch.json
@@ -156,6 +158,22 @@ Replace each hit either with the matching CSS custom prop from your new `brand-t
    ```
 4. Write your `DESIGN.md` (copy the shape of `DESIGN.ais-example.md` from the root).
 5. Build. Preview. Lint. Render.
+
+### Or: generate from an avatar video (pipeline)
+
+If you have a HeyGen (or similar) transparent avatar recording and want backdrop + captions + B-roll + motion graphics assembled automatically:
+
+```bash
+mkdir -p video-projects/my-video-001/source
+# drop avatar.mov in source/, or pass --input explicitly
+npm run pipeline -- --project my-video-001 --input path/to/avatar.mov
+cd video-projects/my-video-001
+npx hyperframes preview
+```
+
+Configure YouTube backdrop URL and caption options in `video-projects/my-video-001/project.json`. Full reference: [`PIPELINE.md`](PIPELINE.md).
+
+Default captions: **64px** type, **48%** frame width max (multi-line wrap), up to **4 words** per chunk, red active-word highlight.
 
 ## The authoring loop
 

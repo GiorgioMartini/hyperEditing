@@ -32,3 +32,18 @@ raw-media/
 **/renders/frames/
 **/renders/frames-*/
 
+# Pipeline output (large files)
+**/processed/
+**/.waveform-cache/
+
+# Large source videos
+*.mov
+*.mp4
+*.webm
+*.avi
+*.mkv
+
+# Keep example/documentation videos
+!**/example*.mp4
+!**/demo*.mp4
+

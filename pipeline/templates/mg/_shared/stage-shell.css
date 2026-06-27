@@ -1,0 +1,36 @@
+/* Stage shell — grid floor + vignette (MOTION_PHILOSOPHY §3.2) */
+[data-composition-id="{{compositionId}}"] .mg-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+[data-composition-id="{{compositionId}}"] .mg-grid-floor {
+  position: absolute;
+  inset: -20%;
+  transform: perspective(900px) rotateX(58deg) translateY(15%);
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 60px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 60px);
+  background-color: #050505;
+  opacity: 0.7;
+}
+[data-composition-id="{{compositionId}}"] .mg-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.85) 100%);
+  z-index: 8;
+}
+[data-composition-id="{{compositionId}}"] .mg-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  z-index: 9;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.8) 0 1px, transparent 1px),
+    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.6) 0 1px, transparent 1px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.5) 0 1px, transparent 1px);
+  background-size: 3px 3px, 5px 5px, 7px 7px;
+}

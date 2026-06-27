@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>dr-ronda-patrick-multivitamins-v2</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #000;
+    }
+    #face-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 2;
+    }
+    .scene-layer {
+      pointer-events: none;
+    }
+    .mg-layer {
+      z-index: 6;
+    }
+    .mg-upper-card {
+      /* inline style on element */
+    }
+    .mg-fullscreen {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+    }
+  </style>
+</head>
+<body>
+  <div data-hf-id="hf-55ze" id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920">
+    
+    <video data-hf-id="hf-9nap" id="backdrop-video" muted src="processed/00-backdrop.mp4" data-start="0" data-duration="45.587" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;"></video>
+    <div data-hf-id="hf-7sa9" id="backdrop-dim" style="position: absolute; inset: 0; background: rgba(0,0,0,0.45); z-index: 1; pointer-events: none;"></div>
+
+    <video data-hf-id="hf-ssmu" id="face-video" muted src="processed/01-transparent.webm" data-start="0" data-duration="45.587"></video>
+
+    <audio data-hf-id="hf-zp68" id="main-audio" class="clip" src="processed/audio.mp3" data-start="0" data-duration="45.587" data-track-index="1" data-volume="1.0"></audio>
+
+    
+    <video data-hf-id="hf-ou7q" id="broll-beat-1" class="clip" data-start="4.388999999999999" data-duration="4.411000000000001" data-track-index="2" muted src="processed/broll-beat-1.mp4" style="position: absolute; width: 35%; aspect-ratio: 9/16; bottom: 10%; right: 5%; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 3;"></video>
+
+    <video data-hf-id="hf-9tpt" id="broll-beat-3" class="clip" data-start="25.049000000000003" data-duration="5" data-track-index="3" muted src="processed/broll-beat-3.mp4" style="position: absolute; width: 35%; aspect-ratio: 9/16; bottom: 10%; right: 5%; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 3;"></video>
+    
+    <div data-hf-id="hf-61m6" id="mg-beat-2" class="scene-layer mg-layer mg-upper-card" data-composition-id="mg-beat-2" data-composition-src="compositions/mg-beat-2.html" data-start="8.9" data-duration="5" data-track-index="4" data-width="1080" data-height="1920" style="position: absolute;
+      top: 8%;
+      left: 5%;
+      right: 5%;
+      height: 42%;
+      border-radius: 16px;
+      overflow: hidden;
+      z-index: 6;
+      pointer-events: none;"></div>
+
+    <div data-hf-id="hf-yz9b" id="captions" class="scene-layer" data-composition-id="captions" data-composition-src="compositions/captions.html" data-start="0" data-duration="45.587" data-track-index="10" data-width="1080" data-height="1920" style="position: absolute; inset: 0; width: 1080px; height: 1920px; z-index: 5; pointer-events: none;"></div>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    tl.set({}, {}, 45.587);
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>

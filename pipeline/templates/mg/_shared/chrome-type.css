@@ -1,0 +1,24 @@
+/* Chrome gradient type + halo glow (MOTION_PHILOSOPHY §3.3) */
+[data-composition-id="{{compositionId}}"] .chrome-text {
+  font-family: var(--mg-font);
+  font-weight: 800;
+  background: linear-gradient(180deg, var(--mg-chrome-top) 0%, var(--mg-chrome-bottom) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 20px rgba(255,255,255,0.25));
+}
+[data-composition-id="{{compositionId}}"] .accent-text {
+  font-family: var(--mg-font);
+  font-weight: 700;
+  color: var(--mg-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 24px var(--mg-glow);
+}
+[data-composition-id="{{compositionId}}"] .mg-spark {
+  stroke: var(--mg-accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  opacity: 0;
+}
