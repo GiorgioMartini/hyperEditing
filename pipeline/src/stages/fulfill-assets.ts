@@ -112,23 +112,25 @@ async function fulfillMotionGraphic(
 
   const outPath = artifacts.motionGraphicHtml(config, beat.id);
   const dimensions = await getVideoDimensions(artifacts.transparentWebm(config));
-  const project = await loadProjectConfig(config.projectDir);
-  const layout = resolveLayoutConfig(project);
-  const brand = resolveBrandTokens(project);
-  const motion = motionConfigFromBrandTokens(brand, project);
+    const project = await loadProjectConfig(config.projectDir);
+    const layout = resolveLayoutConfig(project);
+    const brand = resolveBrandTokens(project);
+    const motion = motionConfigFromBrandTokens(brand, project);
+    const hasBackdrop = existsSync(artifacts.backdropMp4(config));
 
-  await generateMotionGraphicComposition({
-    beatId: beat.id,
-    duration: beat.duration,
-    width: dimensions.width,
-    height: dimensions.height,
-    panelHeight: layout.panelHeight,
-    spec: beat.motionGraphic,
-    outputPath: outPath,
-    motion,
-    transcriptWords: words ?? [],
-    beatStart: beatStartTime(beat),
-  });
+    await generateMotionGraphicComposition({
+      beatId: beat.id,
+      duration: beat.duration,
+      width: dimensions.width,
+      height: dimensions.height,
+      panelHeight: layout.panelHeight,
+      spec: beat.motionGraphic,
+      outputPath: outPath,
+      motion,
+      transcriptWords: words ?? [],
+      beatStart: beatStartTime(beat),
+      transparentStage: hasBackdrop,
+    });
 
   if (!existsSync(outPath)) {
     log.warn(`MG composition not created for ${beat.id}`);

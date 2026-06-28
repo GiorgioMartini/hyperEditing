@@ -9,11 +9,30 @@ export interface PipelineConfig {
 
 export type LayoutMode = 'short-form-split' | 'upper-card' | 'backdrop-pip';
 
+/** GSAP transform target for #face-wrapper (transform-origin: top left). */
+export interface FaceTransform {
+  x: number;
+  y: number;
+  scale: number;
+}
+
+export type FaceFitMode = 'cover' | 'letterbox';
+
 export interface LayoutConfig {
   mode: LayoutMode;
   panelHeight: number;
   faceSourceWidth: number;
   faceSourceHeight: number;
+  /** How the face fills the bottom panel — cover (default) or letterbox (may-shorts-19 style) */
+  faceFitMode?: FaceFitMode;
+  /** Override computed BOTTOM transform (partial merge) */
+  faceBottom?: Partial<FaceTransform>;
+  /** Override computed FULLSCREEN transform (partial merge) */
+  faceFullscreen?: Partial<FaceTransform>;
+  /** CSS object-position on #face-video — tune head room (default 50% 42%) */
+  faceVideoObjectPosition?: string;
+  /** Subtle Ken Burns scale on #face-video over full duration (default 1.012) */
+  faceKenBurnsScale?: number;
 }
 
 export type BrandPresetName = 'dark-chrome' | 'social-navy' | 'custom';
@@ -61,7 +80,12 @@ export interface ProjectConfig {
   };
   backdrop?: {
     maxHeight?: number;
+    /** Black overlay on backdrop, 0–1 (default 0 = full-opacity video) */
     dimOverlay?: number;
+    /** Cover-fit backdrop to top panel only in split layout (default true) */
+    upperPanelOnly?: boolean;
+    /** CSS object-position on backdrop video (default center) */
+    objectPosition?: string;
   };
   motion?: Partial<MotionPlanningConfig> & {
     /** Legacy — prefer brand.accent */
@@ -212,6 +236,10 @@ export interface CompositionLayers {
   audioPath: string;
   backdropVideo: string | null;
   dimOverlay: number;
+  /** Cover-fit backdrop to top panel in split layout (default true) */
+  backdropUpperPanelOnly?: boolean;
+  /** CSS object-position for backdrop video */
+  backdropObjectPosition?: string;
   layout: LayoutConfig;
   brandBackground: string;
   faceModeSchedule: FaceModeEntry[];

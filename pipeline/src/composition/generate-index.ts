@@ -1,7 +1,7 @@
 import type { CompositionLayers, FulfilledBeat, LayoutConfig, MotionGraphicLayout } from '../types.js';
 import { beatStartTime } from '../utils/transcript-anchor.js';
 import {
-  FACE_BOTTOM,
+  computeFaceTransforms,
   generateFaceModeTimelineJs,
 } from './face-mode-schedule.js';
 
@@ -17,6 +17,58 @@ const UPPER_CARD_STYLE = `
       z-index: 6;
       pointer-events: none;
 `;
+
+/** YouTube backdrop — cover-fit inside a clip rect (no stretch; crop overflow). */
+function renderBackdropLayer(options: {
+  backdropVideo: string;
+  duration: number;
+  dimOverlay: number;
+  trackIndex: number;
+  panelHeight?: number;
+  upperPanelOnly: boolean;
+  objectPosition: string;
+}): string {
+  const {
+    backdropVideo,
+    duration,
+    dimOverlay,
+    trackIndex,
+    panelHeight,
+    upperPanelOnly,
+    objectPosition,
+  } = options;
+
+  const clipToPanel = upperPanelOnly && panelHeight != null;
+  const panelStyle = clipToPanel
+    ? `position: absolute; top: 0; left: 0; width: 100%; height: ${panelHeight}px; overflow: hidden; z-index: 0;`
+    : 'position: absolute; inset: 0; overflow: hidden; z-index: 0;';
+
+  const dimLayer =
+    dimOverlay > 0
+      ? `
+    <div
+      id="backdrop-dim"
+      style="position: absolute; ${
+        clipToPanel
+          ? `top: 0; left: 0; width: 100%; height: ${panelHeight}px;`
+          : 'inset: 0;'
+      } background: rgba(0,0,0,${dimOverlay}); z-index: 1; pointer-events: none;"
+    ></div>`
+      : '';
+
+  return `
+    <div id="backdrop-panel" style="${panelStyle}">
+      <video
+        id="backdrop-video"
+        muted
+        src="${backdropVideo}"
+        data-start="0"
+        data-duration="${duration}"
+        data-track-index="${trackIndex}"
+        style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: ${objectPosition};"
+      ></video>
+    </div>${dimLayer}`;
+}
 
 function normalizeLayout(beat: FulfilledBeat): MotionGraphicLayout {
   const layout = beat.motionGraphic?.layout ?? 'top-half';
@@ -154,6 +206,10 @@ function renderSplitLayout(layers: CompositionLayers): string {
     duration,
     faceVideo,
     audioPath,
+    backdropVideo,
+    dimOverlay,
+    backdropUpperPanelOnly = true,
+    backdropObjectPosition = 'center',
     projectName,
     layout,
     brandBackground,
@@ -162,8 +218,46 @@ function renderSplitLayout(layers: CompositionLayers): string {
     sceneTransitions = [],
   } = layers;
 
-  const faceTimelineJs = generateFaceModeTimelineJs(faceModeSchedule, duration);
+  const faceTransforms = computeFaceTransforms(layout, width, height);
+  const { bottom: faceBottom } = faceTransforms;
+  const faceObjectPosition = layout.faceVideoObjectPosition ?? '50% 42%';
+  const kenBurns = layout.faceKenBurnsScale ?? 1.012;
+  const faceTimelineJs = generateFaceModeTimelineJs(faceModeSchedule, duration, faceTransforms, kenBurns);
   const sceneHtml = renderSceneBeatsSplit(sceneBeats, width, height, layout, sceneTransitions);
+  const hasBackdrop = Boolean(backdropVideo);
+
+  // Positive z-index stack — negative values paint behind body background and hide the video.
+  const backdropLayer = hasBackdrop
+    ? renderBackdropLayer({
+        backdropVideo: backdropVideo!,
+        duration,
+        dimOverlay,
+        trackIndex: 6,
+        panelHeight: layout.panelHeight,
+        upperPanelOnly: backdropUpperPanelOnly,
+        objectPosition: backdropObjectPosition,
+      })
+    : '';
+
+  const ambientClipStyle = hasBackdrop && backdropUpperPanelOnly
+    ? `z-index: 2; height: ${layout.panelHeight}px; overflow: hidden;`
+    : 'z-index: 2;';
+
+  const bodyBackground = hasBackdrop ? 'transparent' : brandBackground;
+  const faceWrapperZ = hasBackdrop ? 3 : 0;
+  const faceVignetteCss = hasBackdrop
+    ? `radial-gradient(
+        ellipse at center,
+        transparent 60%,
+        rgba(0, 0, 0, 0.2) 88%,
+        rgba(0, 0, 0, 0.45) 100%
+      )`
+    : `radial-gradient(
+        ellipse at center,
+        transparent 55%,
+        rgba(0, 0, 0, 0.35) 85%,
+        rgba(0, 0, 0, 0.7) 100%
+      )`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -179,7 +273,7 @@ function renderSplitLayout(layers: CompositionLayers): string {
       width: ${width}px;
       height: ${height}px;
       overflow: hidden;
-      background: ${brandBackground};
+      background: ${bodyBackground};
       font-family: var(--brand-font-display, Montserrat, sans-serif);
       color: var(--brand-text, #fff);
     }
@@ -190,14 +284,14 @@ function renderSplitLayout(layers: CompositionLayers): string {
       width: ${layout.faceSourceWidth}px;
       height: ${layout.faceSourceHeight}px;
       transform-origin: 0 0;
-      transform: translate(${FACE_BOTTOM.x}px, ${FACE_BOTTOM.y}px) scale(${FACE_BOTTOM.scale});
-      z-index: 0;
+      z-index: ${faceWrapperZ};
     }
     #face-video {
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: ${faceObjectPosition};
       transform-origin: center center;
       filter: contrast(1.08) saturate(1.08) brightness(0.97);
     }
@@ -206,12 +300,7 @@ function renderSplitLayout(layers: CompositionLayers): string {
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background: radial-gradient(
-        ellipse at center,
-        transparent 55%,
-        rgba(0, 0, 0, 0.35) 85%,
-        rgba(0, 0, 0, 0.7) 100%
-      );
+      background: ${faceVignetteCss};
     }
     .scene-layer {
       position: absolute;
@@ -231,6 +320,7 @@ function renderSplitLayout(layers: CompositionLayers): string {
     data-width="${width}"
     data-height="${height}"
   >
+    ${backdropLayer}
     <div
       id="ambient-bg"
       class="scene-layer"
@@ -241,6 +331,7 @@ function renderSplitLayout(layers: CompositionLayers): string {
       data-track-index="3"
       data-width="${width}"
       data-height="${height}"
+      style="${ambientClipStyle}"
     ></div>
 
     <div id="face-wrapper">
@@ -264,6 +355,7 @@ function renderSplitLayout(layers: CompositionLayers): string {
       data-track-index="5"
       data-width="${width}"
       data-height="${height}"
+      style="z-index: 4;"
     ></div>
 
     <audio
@@ -288,6 +380,7 @@ function renderSplitLayout(layers: CompositionLayers): string {
       data-track-index="2"
       data-width="${width}"
       data-height="${height}"
+      style="z-index: 8;"
     ></div>
   </div>
 
@@ -310,6 +403,8 @@ function renderLegacyLayout(layers: CompositionLayers): string {
     audioPath,
     backdropVideo,
     dimOverlay,
+    backdropUpperPanelOnly = false,
+    backdropObjectPosition = 'center',
     brollBeats,
     motionGraphicBeats,
     projectName,
@@ -317,19 +412,14 @@ function renderLegacyLayout(layers: CompositionLayers): string {
   } = layers;
 
   const backdropLayer = backdropVideo
-    ? `
-    <video
-      id="backdrop-video"
-      muted
-      src="${backdropVideo}"
-      data-start="0"
-      data-duration="${duration}"
-      style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;"
-    ></video>
-    <div
-      id="backdrop-dim"
-      style="position: absolute; inset: 0; background: rgba(0,0,0,${dimOverlay}); z-index: 1; pointer-events: none;"
-    ></div>`
+    ? renderBackdropLayer({
+        backdropVideo,
+        duration,
+        dimOverlay,
+        trackIndex: 0,
+        upperPanelOnly: backdropUpperPanelOnly,
+        objectPosition: backdropObjectPosition,
+      })
     : '';
 
   let trackIndex = 2;

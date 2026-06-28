@@ -36,21 +36,14 @@
       [data-composition-id="ambient-bg"] .amb-base {
         position: absolute;
         inset: 0;
-        background:
-          radial-gradient(
-            ellipse 80% 60% at 50% 28%,
-            #141414 0%,
-            #0a0a0a 45%,
-            #000000 80%,
-            #-5-5-5 100%
-          );
+        background: transparent;
       }
       [data-composition-id="ambient-bg"] .amb-grid {
         position: absolute;
         inset: -40px;
         background-image:
-          linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+          linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
         background-size: 80px 80px;
         opacity: 0.75;
         will-change: transform;
@@ -65,7 +58,7 @@
         height: 6px;
         border-radius: 50%;
         background: #ffffff;
-        box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
         opacity: 0.55;
         will-change: transform, opacity;
       }
@@ -75,8 +68,8 @@
         background: radial-gradient(
           ellipse 100% 80% at 50% 50%,
           transparent 55%,
-          rgba(0, 0, 0, 0.45) 85%,
-          rgba(0, 0, 0, 0.8) 100%
+          transparent 85%,
+          transparent 100%
         );
       }
     </style>

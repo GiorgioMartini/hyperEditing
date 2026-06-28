@@ -72,9 +72,15 @@ export interface GenerateMotionGraphicOptions {
   motion?: MotionConfig;
   transcriptWords?: TranscriptWord[];
   beatStart?: number;
+  /** When true, MG stage/grid are transparent so YouTube backdrop shows through */
+  transparentStage?: boolean;
 }
 
-async function loadSharedStyles(motion: MotionConfig, compositionId: string): Promise<string> {
+async function loadSharedStyles(
+  motion: MotionConfig,
+  compositionId: string,
+  transparentStage = false,
+): Promise<string> {
   let combined = '';
   try {
     const files = (await readdir(SHARED_DIR)).filter((f) => f.endsWith('.css')).sort();
@@ -89,7 +95,11 @@ async function loadSharedStyles(motion: MotionConfig, compositionId: string): Pr
         .replaceAll('{{surface}}', motion.surface)
         .replaceAll('{{text}}', motion.text)
         .replaceAll('{{textDim}}', motion.textDim)
-        .replaceAll('{{compositionId}}', compositionId);
+        .replaceAll('{{compositionId}}', compositionId)
+        .replaceAll('{{stageBackground}}', transparentStage ? 'transparent' : '#000')
+        .replaceAll('{{gridFloorBackground}}', transparentStage ? 'transparent' : '#050505')
+        .replaceAll('{{gridFloorOpacity}}', transparentStage ? '0.45' : '0.7')
+        .replaceAll('{{vignetteMidOpacity}}', transparentStage ? '0.45' : '0.85');
       combined += css + '\n';
     }
   } catch {
@@ -182,6 +192,7 @@ export async function generateMotionGraphicComposition(
     motion = DEFAULT_MOTION_CONFIG,
     transcriptWords = [],
     beatStart = 0,
+    transparentStage = false,
   } = options;
 
   const compositionId = `mg-${beatId}`;
@@ -191,7 +202,7 @@ export async function generateMotionGraphicComposition(
   const templatePath = resolve(TEMPLATES_DIR, `${spec.template}.html`);
   let html = await readFile(templatePath, 'utf-8');
 
-  const sharedStyles = await loadSharedStyles(motion, compositionId);
+  const sharedStyles = await loadSharedStyles(motion, compositionId, transparentStage);
   const preprocessed = preprocessTemplate(spec.template, spec.props);
 
   const internalTiming =

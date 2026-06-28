@@ -1,4 +1,5 @@
 import type {
+  FaceTransform,
   FulfilledBeat,
   FaceModeEntry,
   LayoutConfig,
@@ -10,9 +11,69 @@ import { beatStartTime } from '../utils/transcript-anchor.js';
 const MODE_LEAD_IN = 0.15;
 const MODE_DUR = 0.32;
 
-/** Face transform targets for 1920x1080 source on 1080x1920 canvas. */
+/** @deprecated Use computeFaceTransforms() — kept for tests referencing letterbox values */
 export const FACE_BOTTOM = { x: 0, y: 1136, scale: 0.5625 };
+/** @deprecated Use computeFaceTransforms() */
 export const FACE_FULLSCREEN = { x: -1166.5, y: 0, scale: 1.7778 };
+
+export interface FaceTransformPair {
+  bottom: FaceTransform;
+  fullscreen: FaceTransform;
+}
+
+/**
+ * BOTTOM: cover-fill the lower panel (default) or letterbox full landscape frame.
+ * FULLSCREEN: cover-fill the full 9:16 canvas (cropped sides).
+ */
+export function computeFaceTransforms(
+  layout: LayoutConfig,
+  canvasWidth: number,
+  canvasHeight: number,
+): FaceTransformPair {
+  const { panelHeight, faceSourceWidth, faceSourceHeight, faceFitMode = 'cover' } = layout;
+
+  let bottom: FaceTransform;
+  if (faceFitMode === 'letterbox') {
+    const scale = canvasWidth / faceSourceWidth;
+    const scaledH = faceSourceHeight * scale;
+    bottom = {
+      x: 0,
+      y: panelHeight + (canvasHeight - panelHeight - scaledH) / 2,
+      scale,
+    };
+  } else {
+    // Cover: scale to fill panel height, center-crop horizontally
+    const scale = panelHeight / faceSourceHeight;
+    const scaledW = faceSourceWidth * scale;
+    bottom = {
+      x: (canvasWidth - scaledW) / 2,
+      y: panelHeight,
+      scale,
+    };
+  }
+
+  const fsScale = canvasHeight / faceSourceHeight;
+  const fsScaledW = faceSourceWidth * fsScale;
+  const fullscreen: FaceTransform = {
+    x: (canvasWidth - fsScaledW) / 2,
+    y: 0,
+    scale: fsScale,
+  };
+
+  return {
+    bottom: mergeTransform(bottom, layout.faceBottom),
+    fullscreen: mergeTransform(fullscreen, layout.faceFullscreen),
+  };
+}
+
+function mergeTransform(base: FaceTransform, override?: Partial<FaceTransform>): FaceTransform {
+  if (!override) return base;
+  return {
+    x: override.x ?? base.x,
+    y: override.y ?? base.y,
+    scale: override.scale ?? base.scale,
+  };
+}
 
 function beatLayout(beat: FulfilledBeat): MotionGraphicLayout {
   if (beat.type === 'broll') return 'top-half';
@@ -88,7 +149,6 @@ export function computeSeamWindows(
       }
     }
 
-    // Extend through beat end if last beat in window is BOTTOM
     const beatsInWindow = beats.filter((b) => {
       const s = beatStartTime(b);
       return s >= start - 0.05 && s < end;
@@ -108,27 +168,29 @@ export function computeSeamWindows(
 export function generateFaceModeTimelineJs(
   schedule: FaceModeEntry[],
   duration: number,
+  transforms: FaceTransformPair,
+  kenBurnsScale = 1.012,
 ): string {
-  if (schedule.length === 0) {
-    return `
-      mainTl.set("#face-wrapper", { x: ${FACE_BOTTOM.x}, y: ${FACE_BOTTOM.y}, scale: ${FACE_BOTTOM.scale} }, 0);
-    `;
-  }
+  const { bottom, fullscreen } = transforms;
 
   const lines: string[] = [
-    `mainTl.set("#face-wrapper", { x: ${FACE_BOTTOM.x}, y: ${FACE_BOTTOM.y}, scale: ${FACE_BOTTOM.scale} }, 0);`,
+    `mainTl.set("#face-wrapper", { x: ${bottom.x}, y: ${bottom.y}, scale: ${bottom.scale} }, 0);`,
   ];
 
   for (const entry of schedule) {
     if (entry.t <= 0 && entry.mode === 'BOTTOM') continue;
-    const target = entry.mode === 'FULLSCREEN' ? FACE_FULLSCREEN : FACE_BOTTOM;
+    const target = entry.mode === 'FULLSCREEN' ? fullscreen : bottom;
     const at = Math.max(entry.t - MODE_LEAD_IN, 0);
     lines.push(
       `mainTl.to("#face-wrapper", { x: ${target.x}, y: ${target.y}, scale: ${target.scale}, duration: ${MODE_DUR}, ease: "expo.inOut" }, ${at.toFixed(3)});`,
     );
   }
 
-  lines.push(`mainTl.to("#face-video", { scale: 1.025, duration: ${duration.toFixed(3)}, ease: "none" }, 0);`);
+  if (kenBurnsScale !== 1) {
+    lines.push(
+      `mainTl.to("#face-video", { scale: ${kenBurnsScale}, duration: ${duration.toFixed(3)}, ease: "none" }, 0);`,
+    );
+  }
   lines.push(`mainTl.set({}, {}, ${duration.toFixed(3)});`);
 
   return lines.join('\n      ');

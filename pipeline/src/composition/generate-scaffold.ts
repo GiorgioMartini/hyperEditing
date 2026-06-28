@@ -14,6 +14,8 @@ export interface ScaffoldOptions {
   layout: LayoutConfig;
   brand: BrandTokens;
   seamWindows: SeamWindow[];
+  /** When true, ambient base is transparent so YouTube backdrop video shows through */
+  hasBackdrop?: boolean;
   ambientBgPath: string;
   seamTreatmentPath: string;
 }
@@ -47,26 +49,34 @@ async function fillTemplate(
 
 /** Generate ambient-bg and seam-treatment sub-compositions. */
 export async function generateScaffoldCompositions(options: ScaffoldOptions): Promise<void> {
-  const { width, height, duration, layout, brand, seamWindows } = options;
+  const { width, height, duration, layout, brand, seamWindows, hasBackdrop = false } = options;
   const seamY = layout.panelHeight;
 
   const visibleWindowsJson = JSON.stringify(
     seamWindows.map((w) => [w.start, w.end]),
   );
 
+  // With a YouTube backdrop, keep ambient as a very light accent only — no darkening wash.
+  const ambientBaseBackground = hasBackdrop
+    ? 'transparent'
+    : `radial-gradient(
+            ellipse 80% 60% at 50% 28%,
+            ${liftHex(brand.background, 20)} 0%,
+            ${liftHex(brand.background, 10)} 45%,
+            ${brand.background} 80%,
+            ${liftHex(brand.background, -5)} 100%
+          )`;
+
   const ambientHtml = await fillTemplate('ambient-bg', {
     width: String(width),
     height: String(height),
     duration: String(duration),
-    background: brand.background,
-    ambientLift: liftHex(brand.background, 20),
-    ambientMid: liftHex(brand.background, 10),
-    ambientEdge: liftHex(brand.background, -5),
-    gridColor: hexToRgba(brand.accent, 0.045),
+    ambientBaseBackground,
+    gridColor: hexToRgba(brand.accent, hasBackdrop ? 0.015 : 0.045),
     accent: brand.accent,
-    accentGlow: hexToRgba(brand.accent, 0.6),
-    vignetteMid: hexToRgba(brand.background, 0.45),
-    vignetteEdge: hexToRgba(brand.background, 0.8),
+    accentGlow: hexToRgba(brand.accent, hasBackdrop ? 0.35 : 0.6),
+    vignetteMid: hasBackdrop ? 'transparent' : hexToRgba(brand.background, 0.45),
+    vignetteEdge: hasBackdrop ? 'transparent' : hexToRgba(brand.background, 0.8),
   });
 
   const seamHtml = await fillTemplate('seam-treatment', {

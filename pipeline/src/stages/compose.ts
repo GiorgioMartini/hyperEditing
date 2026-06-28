@@ -92,6 +92,7 @@ export async function buildComposition(config: PipelineConfig): Promise<StageRes
         layout,
         brand,
         seamWindows,
+        hasBackdrop,
         ambientBgPath: artifacts.ambientBgHtml(config),
         seamTreatmentPath: artifacts.seamTreatmentHtml(config),
       });
@@ -139,9 +140,10 @@ export async function buildComposition(config: PipelineConfig): Promise<StageRes
       duration,
       faceVideo: 'processed/01-transparent.webm',
       audioPath: 'processed/audio.mp3',
-      backdropVideo:
-        layout.mode === 'backdrop-pip' && hasBackdrop ? 'processed/00-backdrop.mp4' : null,
-      dimOverlay: project?.backdrop?.dimOverlay ?? 0.45,
+      backdropVideo: hasBackdrop ? 'processed/00-backdrop.mp4' : null,
+      dimOverlay: project?.backdrop?.dimOverlay ?? 0,
+      backdropUpperPanelOnly: project?.backdrop?.upperPanelOnly ?? layout.mode === 'short-form-split',
+      backdropObjectPosition: project?.backdrop?.objectPosition ?? 'center',
       layout,
       brandBackground: brand.background,
       faceModeSchedule,
@@ -161,7 +163,7 @@ export async function buildComposition(config: PipelineConfig): Promise<StageRes
 
     log.success('HyperFrames composition created');
     log.dim(`Layout: ${layout.mode}`);
-    if (hasBackdrop && layout.mode === 'backdrop-pip') log.dim('Backdrop layer: enabled');
+    if (hasBackdrop) log.dim('Backdrop layer: enabled');
     log.dim(`Scene beats: ${sceneBeats.length} (B-roll: ${brollBeats.length}, MG: ${motionGraphicBeats.length})`);
     log.dim(`Captions: ${artifacts.captionsHtml(config)}`);
     log.dim(`Duration: ${duration.toFixed(2)}s`);

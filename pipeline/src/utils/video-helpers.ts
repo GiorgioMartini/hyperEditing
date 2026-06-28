@@ -4,6 +4,24 @@ import { exec } from 'child_process';
 
 const execAsync = promisify(exec);
 
+/** Returns video stream pixel format (e.g. yuv420p, yuva420p) via ffprobe. */
+export async function getVideoPixelFormat(videoPath: string): Promise<string | null> {
+  try {
+    const { stdout } = await execAsync(
+      `ffprobe -v error -select_streams v:0 -show_entries stream=pix_fmt -of default=nw=1:nk=1 "${videoPath}"`,
+    );
+    const fmt = stdout.trim();
+    return fmt || null;
+  } catch {
+    return null;
+  }
+}
+
+/** True when ffprobe reports an alpha-capable pixel format. */
+export function pixelFormatHasAlpha(pixFmt: string): boolean {
+  return /yuva|rgba|bgra|argb|gbra|ya/i.test(pixFmt);
+}
+
 export async function getVideoDuration(videoPath: string): Promise<number> {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(videoPath, (err, metadata) => {
@@ -70,6 +88,7 @@ export async function prepareBackdropVideo(
   options: { width: number; height: number; duration: number },
 ): Promise<void> {
   const { width, height, duration } = options;
+  // Uniform scale + center crop — cover-fit with no non-uniform stretch.
   const vf = [
     `scale=${width}:${height}:force_original_aspect_ratio=increase`,
     `crop=${width}:${height}`,
