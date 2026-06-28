@@ -1,0 +1,81 @@
+<template id="seam-treatment-template">
+  <div
+    data-composition-id="seam-treatment"
+    data-start="0"
+    data-width="{{width}}"
+    data-height="{{height}}"
+    data-duration="{{duration}}"
+  >
+    <div class="seam-gradient" id="seam-gradient"></div>
+    <div class="seam-line" id="seam-line"></div>
+
+    <style>
+      [data-composition-id="seam-treatment"] {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      [data-composition-id="seam-treatment"] .seam-gradient {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: {{seamY}}px;
+        height: 80px;
+        background: linear-gradient(
+          to bottom,
+          {{seamGradientTop}} 0%,
+          {{seamGradientMid}} 35%,
+          rgba(0, 0, 0, 0) 100%
+        );
+        opacity: 0;
+      }
+      [data-composition-id="seam-treatment"] .seam-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: {{seamLineY}}px;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          {{seamLineDim}} 20%,
+          {{seamLineBright}} 50%,
+          {{seamLineDim}} 80%,
+          transparent 100%
+        );
+        box-shadow: 0 0 18px {{seamLineGlow}};
+        opacity: 0;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const scope = '[data-composition-id="seam-treatment"] ';
+        const FADE = 0.25;
+        const TOTAL = {{duration}};
+        const VISIBLE_WINDOWS = {{visibleWindowsJson}};
+
+        const els = [scope + "#seam-gradient", scope + "#seam-line"];
+        els.forEach(function (sel) {
+          tl.set(sel, { opacity: 0 }, 0);
+        });
+
+        VISIBLE_WINDOWS.forEach(function (win) {
+          const inAt = Math.max(win[0] - 0.1, 0);
+          const outAt = Math.max(win[1] - FADE - 0.05, inAt + 0.1);
+          els.forEach(function (sel, i) {
+            const target = i === 0 ? 1.0 : 0.8;
+            tl.to(sel, { opacity: target, duration: FADE, ease: "power2.out" }, inAt);
+            tl.to(sel, { opacity: 0, duration: FADE, ease: "power2.in" }, outAt);
+          });
+        });
+
+        tl.set({}, {}, TOTAL);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["seam-treatment"] = tl;
+      })();
+    </script>
+  </div>
+</template>

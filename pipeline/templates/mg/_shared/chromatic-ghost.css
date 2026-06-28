@@ -1,0 +1,21 @@
+/* Chromatic ghost duplicate layers for word-swap beats */
+[data-composition-id="{{compositionId}}"] .ghost-red,
+[data-composition-id="{{compositionId}}"] .ghost-cyan {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+}
+[data-composition-id="{{compositionId}}"] .ghost-red {
+  color: #ff3333;
+  transform: translate(-4px, 0);
+  mix-blend-mode: screen;
+}
+[data-composition-id="{{compositionId}}"] .ghost-cyan {
+  color: #00ffff;
+  transform: translate(4px, 0);
+  mix-blend-mode: screen;
+}

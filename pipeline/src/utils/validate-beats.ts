@@ -1,4 +1,4 @@
-import { beatStartTime, findPhraseTimestamp } from './transcript-anchor.js';
+import { beatStartTime, findPhraseMatch, getSpeechWindow } from './transcript-anchor.js';
 import { log } from './logger.js';
 import type { TranscriptWord, VisualBeat } from '../types.js';
 
@@ -10,6 +10,9 @@ export interface BeatValidationIssue {
 
 export interface ValidateBeatsOptions {
   videoDuration?: number;
+  speechEnd?: number;
+  preRollSec?: number;
+  postHoldSec?: number;
   /** Fail on warnings when true (stage 6 compose) */
   strict?: boolean;
 }
@@ -25,31 +28,64 @@ export function validateBeats(
 ): BeatValidationIssue[] {
   const issues: BeatValidationIssue[] = [];
   const sorted = [...beats].sort((a, b) => beatStartTime(a) - beatStartTime(b));
+  const speech = getSpeechWindow(words);
+  const speechEnd = options.speechEnd ?? speech.speechEndWithHold;
+  const preRoll = options.preRollSec ?? 0.15;
+  const postHold = options.postHoldSec ?? 0.3;
 
   for (const beat of sorted) {
     if (beat.anchorPhrase) {
-      const found = findPhraseTimestamp(words, beat.anchorPhrase);
-      if (found === null) {
+      const match = findPhraseMatch(words, beat.anchorPhrase);
+      if (match === null) {
         issues.push({
           beatId: beat.id,
-          severity: 'warning',
+          severity: 'error',
           message: `Anchor phrase not found in transcript: "${beat.anchorPhrase}"`,
         });
+      } else {
+        const start = beatStartTime(beat);
+        const expectedStart = Math.max(0, match.start - preRoll);
+        const drift = Math.abs(start - expectedStart);
+        if (drift > 0.35) {
+          issues.push({
+            beatId: beat.id,
+            severity: 'error',
+            message: `Anchor sync drift ${drift.toFixed(2)}s (resolved ${start.toFixed(2)}s vs phrase ${match.start.toFixed(2)}s)`,
+          });
+        }
       }
     } else {
       issues.push({
         beatId: beat.id,
-        severity: 'warning',
-        message: 'Missing anchorPhrase — timing may be inaccurate',
+        severity: 'error',
+        message: 'Missing anchorPhrase — beat should have been dropped',
       });
     }
 
     const start = beatStartTime(beat);
-    if (options.videoDuration !== undefined && start + beat.duration > options.videoDuration + 0.5) {
+    const beatEnd = start + beat.duration;
+
+    if (start > speechEnd + 0.15) {
       issues.push({
         beatId: beat.id,
         severity: 'error',
-        message: `Beat extends past video duration (${(start + beat.duration).toFixed(2)}s > ${options.videoDuration.toFixed(2)}s)`,
+        message: `Beat starts after speech ends (${start.toFixed(2)}s > ${speechEnd.toFixed(2)}s)`,
+      });
+    }
+
+    if (beatEnd > speechEnd + postHold + 0.5) {
+      issues.push({
+        beatId: beat.id,
+        severity: 'error',
+        message: `Beat extends past speech end (${beatEnd.toFixed(2)}s > ${(speechEnd + postHold).toFixed(2)}s)`,
+      });
+    }
+
+    if (options.videoDuration !== undefined && beatEnd > options.videoDuration + 0.5) {
+      issues.push({
+        beatId: beat.id,
+        severity: 'error',
+        message: `Beat extends past video duration (${beatEnd.toFixed(2)}s > ${options.videoDuration.toFixed(2)}s)`,
       });
     }
 

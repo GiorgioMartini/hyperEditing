@@ -1,0 +1,49 @@
+<!-- badge-list: numbered pills stagger reveal -->
+<template id="mg-badge-list-template">
+  <div data-composition-id="{{compositionId}}" data-start="0" data-width="{{width}}" data-height="{{height}}" data-duration="{{duration}}">
+    <div class="mg-stage">
+      <div class="mg-grid-floor"></div>
+      <div class="mg-panel">
+        <div class="mg-content">
+          <div class="badge-title accent-text" id="badge-title">{{headline}}</div>
+          <div class="badge-wrap">{{badgesHtml}}</div>
+        </div>
+      </div>
+      <div class="mg-vignette"></div>
+      <div class="mg-grain"></div>
+    </div>
+    <style>
+      {{sharedStyles}}
+      [data-composition-id="{{compositionId}}"] { position: absolute; inset: 0; pointer-events: none; }
+      [data-composition-id="{{compositionId}}"] .badge-title { font-size: 30px; margin-bottom: 20px; opacity: 0; font-family: var(--mg-font-mono); letter-spacing: 0.05em; }
+      [data-composition-id="{{compositionId}}"] .badge-wrap { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+      [data-composition-id="{{compositionId}}"] .badge-pill { display: flex; align-items: center; gap: 12px; background: var(--mg-surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 12px 24px; font-size: 26px; font-weight: 700; opacity: 0; transform: translateX(-40px); min-width: 280px; }
+      [data-composition-id="{{compositionId}}"] .badge-num { font-family: var(--mg-font-mono); color: var(--mg-accent); font-size: 18px; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--mg-accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const compId = "{{compositionId}}";
+        const dur = {{duration}};
+        const tl = gsap.timeline({ paused: true });
+        const root = '[data-composition-id="' + compId + '"]';
+
+        tl.fromTo(root + ' .badge-title', { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, 0.15);
+        tl.to(root + ' .mg-grid-floor', { backgroundPositionX: '-=20', duration: dur - 0.5, ease: 'none' }, 0.2);
+
+        const badges = document.querySelectorAll(root + ' .badge-pill');
+        badges.forEach(function (el, i) {
+          tl.fromTo(el, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.38, ease: 'back.out(1.5)' }, 0.35 + i * 0.2);
+          tl.to(el.querySelector('.badge-num'), { scale: 1.15, duration: 0.15, ease: 'power2.out', yoyo: true, repeat: 1 }, 0.5 + i * 0.2);
+        });
+
+        tl.to(root + ' .badge-pill', { x: 4, duration: 0.5, ease: 'sine.inOut', yoyo: true, repeat: 1, stagger: 0.08 }, 1.1);
+        tl.to(root + ' .badge-title', { opacity: 0, duration: 0.25 }, dur - 0.45);
+        tl.to(root + ' .badge-pill', { opacity: 0, x: 20, duration: 0.28, stagger: 0.05, ease: 'power2.in' }, dur - 0.4);
+        tl.set({}, {}, dur);
+        window.__timelines = window.__timelines || {};
+        window.__timelines[compId] = tl;
+      })();
+    </script>
+  </div>
+</template>

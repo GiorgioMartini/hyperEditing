@@ -1,0 +1,50 @@
+<!-- CSS push transition between scene beats — 0.35s overlay -->
+<template id="scene-transition-template">
+  <div
+    data-composition-id="trans-beat-19-to-beat-20"
+    data-start="0"
+    data-width="1080"
+    data-height="1920"
+    data-duration="0.35"
+  >
+    <div class="trans-panel" id="trans-panel"></div>
+    <style>
+      [data-composition-id="trans-beat-19-to-beat-20"] {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 7;
+      }
+      [data-composition-id="trans-beat-19-to-beat-20"] .trans-panel {
+        position: absolute;
+        inset: 0;
+        background: var(--brand-bg, #07121c);
+        transform: translateX(100%);
+        opacity: 0.95;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const compId = "trans-beat-19-to-beat-20";
+        const dur = 0.35;
+        const tl = gsap.timeline({ paused: true });
+        const root = '[data-composition-id="' + compId + '"]';
+
+        tl.fromTo(root + ' .trans-panel',
+          { x: '100%' },
+          { x: '0%', duration: dur * 0.45, ease: 'power2.inOut' },
+          0
+        );
+        tl.to(root + ' .trans-panel',
+          { x: '-100%', duration: dur * 0.45, ease: 'power2.inOut' },
+          dur * 0.5
+        );
+        tl.set({}, {}, dur);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines[compId] = tl;
+      })();
+    </script>
+  </div>
+</template>

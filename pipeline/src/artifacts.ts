@@ -45,6 +45,15 @@ export const artifacts = {
   captionsHtml: (config: PipelineConfig) =>
     resolve(config.projectDir, 'compositions', 'captions.html'),
 
+  ambientBgHtml: (config: PipelineConfig) =>
+    resolve(config.projectDir, 'compositions', 'ambient-bg.html'),
+
+  seamTreatmentHtml: (config: PipelineConfig) =>
+    resolve(config.projectDir, 'compositions', 'seam-treatment.html'),
+
+  brandTokensCss: (config: PipelineConfig) =>
+    resolve(config.projectDir, 'assets', 'brand-tokens.css'),
+
   motionGraphicHtml: (config: PipelineConfig, beatId: string) =>
     resolve(config.projectDir, 'compositions', `mg-${beatId}.html`),
 

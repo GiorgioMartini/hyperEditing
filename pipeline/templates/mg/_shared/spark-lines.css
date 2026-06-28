@@ -1,0 +1,7 @@
+[data-composition-id="{{compositionId}}"] .mg-spark {
+  stroke: var(--mg-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0;
+  transform-origin: center;
+}

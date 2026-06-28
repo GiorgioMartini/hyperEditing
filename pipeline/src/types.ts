@@ -7,8 +7,41 @@ export interface PipelineConfig {
   useStableTranscript?: boolean;
 }
 
+export type LayoutMode = 'short-form-split' | 'upper-card' | 'backdrop-pip';
+
+export interface LayoutConfig {
+  mode: LayoutMode;
+  panelHeight: number;
+  faceSourceWidth: number;
+  faceSourceHeight: number;
+}
+
+export type BrandPresetName = 'dark-chrome' | 'social-navy' | 'custom';
+
+export interface BrandConfig {
+  preset?: BrandPresetName;
+  background?: string;
+  accent?: string;
+  accentSecondary?: string;
+  text?: string;
+  textDim?: string;
+  surface?: string;
+  fontDisplay?: string;
+  fontMono?: string;
+}
+
+export interface MotionPlanningConfig {
+  beatIntervalSec: number;
+  minBeatDuration: number;
+  maxBeatDuration: number;
+  jawDropperEverySec: number;
+  useRegistryTransitions: boolean;
+}
+
 export interface ProjectConfig {
   originalUrl?: string;
+  layout?: Partial<LayoutConfig>;
+  brand?: BrandConfig;
   captions?: {
     maxWordsPerChunk?: number;
     activeColor?: string;
@@ -23,13 +56,17 @@ export interface ProjectConfig {
     postHoldSec?: number;
     fadeInSec?: number;
     fadeOutSec?: number;
+    /** bottom placement offset px for short-form-split (default 220) */
+    bottomOffset?: number;
   };
   backdrop?: {
     maxHeight?: number;
     dimOverlay?: number;
   };
-  motion?: {
+  motion?: Partial<MotionPlanningConfig> & {
+    /** Legacy — prefer brand.accent */
     accentColor?: string;
+    /** Legacy — prefer brand.fontDisplay */
     fontFamily?: string;
   };
 }
@@ -50,14 +87,30 @@ export interface Transcript {
 
 export type BeatType = 'broll' | 'motion-graphic';
 
-export type MotionGraphicTemplate = 'stat-callout' | 'kinetic-type' | 'list-reveal' | 'stat-slam';
+export type MotionGraphicTemplate =
+  | 'stat-callout'
+  | 'kinetic-type'
+  | 'list-reveal'
+  | 'stat-slam'
+  | 'card-grid-3'
+  | 'chromatic-slam'
+  | 'stamp-reject'
+  | 'contrast-flip'
+  | 'badge-list'
+  | 'hero-quote'
+  | 'path-draw-icon'
+  | 'counter-up';
 
-export type MotionGraphicLayout = 'upper-card' | 'fullscreen';
+/** top-half = May-shorts panel; upper-card = legacy small card; fullscreen = cover canvas */
+export type MotionGraphicLayout = 'top-half' | 'upper-card' | 'fullscreen';
+
+export type BeatEmphasis = 'normal' | 'hero';
 
 export interface MotionGraphicSpec {
   template: MotionGraphicTemplate;
   props: Record<string, string>;
   layout?: MotionGraphicLayout;
+  emphasis?: BeatEmphasis;
 }
 
 export interface VisualBeat {
@@ -96,6 +149,16 @@ export interface FulfilledBeatsFile {
   beats: FulfilledBeat[];
 }
 
+export interface FaceModeEntry {
+  t: number;
+  mode: 'BOTTOM' | 'FULLSCREEN';
+}
+
+export interface SeamWindow {
+  start: number;
+  end: number;
+}
+
 export interface PexelsVideoFile {
   id: number;
   quality: string;
@@ -126,6 +189,20 @@ export interface StageResult {
   error?: string;
 }
 
+export interface MotionQualityIssue {
+  code: string;
+  severity: 'error' | 'warning';
+  message: string;
+  beatId?: string;
+}
+
+export interface SceneTransitionSpec {
+  id: string;
+  start: number;
+  duration: number;
+  relPath: string;
+}
+
 export interface CompositionLayers {
   projectName: string;
   width: number;
@@ -135,6 +212,13 @@ export interface CompositionLayers {
   audioPath: string;
   backdropVideo: string | null;
   dimOverlay: number;
+  layout: LayoutConfig;
+  brandBackground: string;
+  faceModeSchedule: FaceModeEntry[];
+  seamWindows: SeamWindow[];
   brollBeats: FulfilledBeat[];
   motionGraphicBeats: FulfilledBeat[];
+  /** All visual beats sorted by time (MG + broll) for split-layout track 1 */
+  sceneBeats: FulfilledBeat[];
+  sceneTransitions?: SceneTransitionSpec[];
 }

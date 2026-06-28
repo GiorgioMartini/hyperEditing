@@ -1,0 +1,58 @@
+<!-- chromatic-slam: setup word → glitch → payoff word with ghost layers -->
+<template id="mg-chromatic-slam-template">
+  <div data-composition-id="{{compositionId}}" data-start="0" data-width="{{width}}" data-height="{{height}}" data-duration="{{duration}}">
+    <div class="mg-stage">
+      <div class="mg-grid-floor"></div>
+      <div class="mg-panel">
+        <div class="mg-content slam-stage" id="slam-stage">
+          <div class="setup-word chrome-text" id="setup-word">{{headline}}</div>
+          <div class="ghost-red chrome-text" id="ghost-red">{{payoffWord}}</div>
+          <div class="ghost-cyan chrome-text" id="ghost-cyan">{{payoffWord}}</div>
+          <div class="payoff-word chrome-text" id="payoff-word">{{payoffWord}}</div>
+          <div class="strike-line" id="strike-line"></div>
+        </div>
+      </div>
+      <div class="mg-vignette"></div>
+      <div class="mg-grain"></div>
+    </div>
+    <style>
+      {{sharedStyles}}
+      [data-composition-id="{{compositionId}}"] { position: absolute; inset: 0; pointer-events: none; }
+      [data-composition-id="{{compositionId}}"] .slam-stage { position: relative; min-height: 200px; }
+      [data-composition-id="{{compositionId}}"] .setup-word { font-size: 120px; line-height: 1; opacity: 0; transform: scale(0.8); }
+      [data-composition-id="{{compositionId}}"] .payoff-word { font-size: 100px; line-height: 1; opacity: 0; transform: scale(2); position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+      [data-composition-id="{{compositionId}}"] .ghost-red, [data-composition-id="{{compositionId}}"] .ghost-cyan { font-size: 100px; }
+      [data-composition-id="{{compositionId}}"] .strike-line { position: absolute; left: 10%; right: 10%; top: 55%; height: 6px; background: var(--mg-accent-secondary); transform: scaleX(0); transform-origin: left; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const compId = "{{compositionId}}";
+        const dur = {{duration}};
+        const setupAt = {{setupLocalSec}};
+        const payoffAt = {{payoffLocalSec}};
+        const strikeAt = {{strikeLocalSec}};
+        const fadeOut = {{fadeOutLocalSec}};
+        const tl = gsap.timeline({ paused: true });
+        const root = '[data-composition-id="' + compId + '"]';
+
+        tl.fromTo(root + ' .setup-word', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' }, setupAt);
+        tl.to(root + ' .mg-grid-floor', { backgroundPositionY: '-=20', duration: dur - 0.5, ease: 'none' }, 0.15);
+        tl.to(root + ' .setup-word', { x: -12, duration: 0.04, ease: 'power1.in', yoyo: true, repeat: 5 }, payoffAt - 0.12);
+        tl.to(root + ' .ghost-red', { opacity: 0.7, duration: 0.08, ease: 'power2.out' }, payoffAt - 0.05);
+        tl.to(root + ' .ghost-cyan', { opacity: 0.7, duration: 0.08, ease: 'power2.out' }, payoffAt - 0.05);
+        tl.to(root + ' .setup-word', { opacity: 0, scale: 0.5, duration: 0.12, ease: 'power2.in' }, payoffAt);
+        tl.fromTo(root + ' .payoff-word', { opacity: 0, scale: 2.2 }, { opacity: 1, scale: 1, duration: 0.22, ease: 'back.out(2.5)' }, payoffAt);
+        tl.to(root + ' .ghost-red', { opacity: 0, x: -30, duration: 0.2 }, payoffAt + 0.15);
+        tl.to(root + ' .ghost-cyan', { opacity: 0, x: 30, duration: 0.2 }, payoffAt + 0.15);
+        tl.to(root + ' .strike-line', { scaleX: 1, duration: 0.18, ease: 'power3.out' }, strikeAt);
+        tl.to(root + ' .payoff-word', { scale: 1.05, duration: 0.8, ease: 'sine.inOut', yoyo: true, repeat: 1 }, payoffAt + 0.5);
+        tl.to(root + ' .payoff-word', { opacity: 0, y: -20, duration: 0.3, ease: 'power2.in' }, fadeOut);
+        tl.to(root + ' .strike-line', { opacity: 0, duration: 0.2 }, fadeOut);
+        tl.set({}, {}, dur);
+        window.__timelines = window.__timelines || {};
+        window.__timelines[compId] = tl;
+      })();
+    </script>
+  </div>
+</template>

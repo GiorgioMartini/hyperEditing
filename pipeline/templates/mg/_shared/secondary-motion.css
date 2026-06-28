@@ -1,0 +1,21 @@
+/* Secondary hold motion — underline sweeps, glow pulses */
+[data-composition-id="{{compositionId}}"] .mg-underline-sweep {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--mg-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  box-shadow: 0 0 12px var(--mg-accent);
+}
+[data-composition-id="{{compositionId}}"] .mg-glow-pulse {
+  animation: none;
+}
+[data-composition-id="{{compositionId}}"] .mg-check-pop {
+  color: var(--mg-accent);
+  font-weight: 900;
+  opacity: 0;
+  transform: scale(0);
+}

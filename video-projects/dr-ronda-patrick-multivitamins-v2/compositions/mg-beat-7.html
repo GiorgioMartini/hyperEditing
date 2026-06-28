@@ -1,0 +1,212 @@
+<!-- chromatic-slam: setup word → glitch → payoff word with ghost layers -->
+<template id="mg-chromatic-slam-template">
+  <div data-composition-id="mg-beat-7" data-start="0" data-width="1080" data-height="960" data-duration="2.231">
+    <div class="mg-stage">
+      <div class="mg-grid-floor"></div>
+      <div class="mg-panel">
+        <div class="mg-content slam-stage" id="slam-stage">
+          <div class="setup-word chrome-text" id="setup-word">Major Dietary Gaps</div>
+          <div class="ghost-red chrome-text" id="ghost-red">FILLED</div>
+          <div class="ghost-cyan chrome-text" id="ghost-cyan">FILLED</div>
+          <div class="payoff-word chrome-text" id="payoff-word">FILLED</div>
+          <div class="strike-line" id="strike-line"></div>
+        </div>
+      </div>
+      <div class="mg-vignette"></div>
+      <div class="mg-grain"></div>
+    </div>
+    <style>
+      /* Chromatic ghost duplicate layers for word-swap beats */
+[data-composition-id="mg-beat-7"] .ghost-red,
+[data-composition-id="mg-beat-7"] .ghost-cyan {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+}
+[data-composition-id="mg-beat-7"] .ghost-red {
+  color: #ff3333;
+  transform: translate(-4px, 0);
+  mix-blend-mode: screen;
+}
+[data-composition-id="mg-beat-7"] .ghost-cyan {
+  color: #00ffff;
+  transform: translate(4px, 0);
+  mix-blend-mode: screen;
+}
+
+/* Chrome gradient type + halo glow (MOTION_PHILOSOPHY §3.3) */
+[data-composition-id="mg-beat-7"] .chrome-text {
+  font-family: var(--mg-font);
+  font-weight: 800;
+  background: linear-gradient(180deg, var(--mg-chrome-top) 0%, var(--mg-chrome-bottom) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 20px rgba(255,255,255,0.25));
+}
+[data-composition-id="mg-beat-7"] .accent-text {
+  font-family: var(--mg-font);
+  font-weight: 700;
+  color: var(--mg-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 24px var(--mg-glow);
+}
+[data-composition-id="mg-beat-7"] .mg-spark {
+  stroke: var(--mg-accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+/* Upper-card glass panel — no full-screen scrim */
+[data-composition-id="mg-beat-7"] .mg-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 32px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.15) 100%);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 8px 32px rgba(0,0,0,0.4);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+}
+[data-composition-id="mg-beat-7"] .mg-content {
+  position: relative;
+  z-index: 4;
+  text-align: center;
+  width: 100%;
+}
+
+/* Secondary hold motion — underline sweeps, glow pulses */
+[data-composition-id="mg-beat-7"] .mg-underline-sweep {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--mg-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  box-shadow: 0 0 12px var(--mg-accent);
+}
+[data-composition-id="mg-beat-7"] .mg-glow-pulse {
+  animation: none;
+}
+[data-composition-id="mg-beat-7"] .mg-check-pop {
+  color: var(--mg-accent);
+  font-weight: 900;
+  opacity: 0;
+  transform: scale(0);
+}
+
+[data-composition-id="mg-beat-7"] .mg-spark {
+  stroke: var(--mg-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0;
+  transform-origin: center;
+}
+
+/* Stage shell — grid floor + vignette (MOTION_PHILOSOPHY §3.2) */
+[data-composition-id="mg-beat-7"] .mg-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+[data-composition-id="mg-beat-7"] .mg-grid-floor {
+  position: absolute;
+  inset: -20%;
+  transform: perspective(900px) rotateX(58deg) translateY(15%);
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 60px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 60px);
+  background-color: #050505;
+  opacity: 0.7;
+}
+[data-composition-id="mg-beat-7"] .mg-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.85) 100%);
+  z-index: 8;
+}
+[data-composition-id="mg-beat-7"] .mg-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  z-index: 9;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.8) 0 1px, transparent 1px),
+    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.6) 0 1px, transparent 1px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.5) 0 1px, transparent 1px);
+  background-size: 3px 3px, 5px 5px, 7px 7px;
+}
+
+/* Design tokens — brand-aware palette */
+[data-composition-id="mg-beat-7"] {
+  --mg-accent: #ffffff;
+  --mg-accent-secondary: #888888;
+  --mg-font: Montserrat, sans-serif;
+  --mg-font-mono: Roboto Mono, monospace;
+  --mg-bg: #000000;
+  --mg-surface: #111111;
+  --mg-text: #ffffff;
+  --mg-text-dim: #aaaaaa;
+  --mg-chrome-top: #ffffff;
+  --mg-chrome-bottom: #888888;
+  --mg-glow: #ffffff;
+}
+
+
+      [data-composition-id="mg-beat-7"] { position: absolute; inset: 0; pointer-events: none; }
+      [data-composition-id="mg-beat-7"] .slam-stage { position: relative; min-height: 200px; }
+      [data-composition-id="mg-beat-7"] .setup-word { font-size: 120px; line-height: 1; opacity: 0; transform: scale(0.8); }
+      [data-composition-id="mg-beat-7"] .payoff-word { font-size: 100px; line-height: 1; opacity: 0; transform: scale(2); position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+      [data-composition-id="mg-beat-7"] .ghost-red, [data-composition-id="mg-beat-7"] .ghost-cyan { font-size: 100px; }
+      [data-composition-id="mg-beat-7"] .strike-line { position: absolute; left: 10%; right: 10%; top: 55%; height: 6px; background: var(--mg-accent-secondary); transform: scaleX(0); transform-origin: left; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const compId = "mg-beat-7";
+        const dur = 2.231;
+        const setupAt = 0.200;
+        const payoffAt = 0.781;
+        const strikeAt = 0.881;
+        const fadeOut = 1.881;
+        const tl = gsap.timeline({ paused: true });
+        const root = '[data-composition-id="' + compId + '"]';
+
+        tl.fromTo(root + ' .setup-word', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' }, setupAt);
+        tl.to(root + ' .mg-grid-floor', { backgroundPositionY: '-=20', duration: dur - 0.5, ease: 'none' }, 0.15);
+        tl.to(root + ' .setup-word', { x: -12, duration: 0.04, ease: 'power1.in', yoyo: true, repeat: 5 }, payoffAt - 0.12);
+        tl.to(root + ' .ghost-red', { opacity: 0.7, duration: 0.08, ease: 'power2.out' }, payoffAt - 0.05);
+        tl.to(root + ' .ghost-cyan', { opacity: 0.7, duration: 0.08, ease: 'power2.out' }, payoffAt - 0.05);
+        tl.to(root + ' .setup-word', { opacity: 0, scale: 0.5, duration: 0.12, ease: 'power2.in' }, payoffAt);
+        tl.fromTo(root + ' .payoff-word', { opacity: 0, scale: 2.2 }, { opacity: 1, scale: 1, duration: 0.22, ease: 'back.out(2.5)' }, payoffAt);
+        tl.to(root + ' .ghost-red', { opacity: 0, x: -30, duration: 0.2 }, payoffAt + 0.15);
+        tl.to(root + ' .ghost-cyan', { opacity: 0, x: 30, duration: 0.2 }, payoffAt + 0.15);
+        tl.to(root + ' .strike-line', { scaleX: 1, duration: 0.18, ease: 'power3.out' }, strikeAt);
+        tl.to(root + ' .payoff-word', { scale: 1.05, duration: 0.8, ease: 'sine.inOut', yoyo: true, repeat: 1 }, payoffAt + 0.5);
+        tl.to(root + ' .payoff-word', { opacity: 0, y: -20, duration: 0.3, ease: 'power2.in' }, fadeOut);
+        tl.to(root + ' .strike-line', { opacity: 0, duration: 0.2 }, fadeOut);
+        tl.set({}, {}, dur);
+        window.__timelines = window.__timelines || {};
+        window.__timelines[compId] = tl;
+      })();
+    </script>
+  </div>
+</template>

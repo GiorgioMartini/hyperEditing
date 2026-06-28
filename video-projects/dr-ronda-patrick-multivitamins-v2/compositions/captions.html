@@ -18,17 +18,23 @@
         position: absolute;
         left: 0;
         right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 0;
         pointer-events: none;
+        
+        bottom: 220px;
+        top: auto;
+        transform: none;
+        height: auto;
+      
       }
       [data-composition-id="captions"] .cap-line-wrap {
         position: absolute;
-        top: 50%;
         left: 0;
         right: 0;
-        transform: translateY(-50%);
+        
+        top: auto;
+        bottom: 0;
+        transform: none;
+      
         display: flex;
         justify-content: center;
         padding: 0 48px;
@@ -39,18 +45,18 @@
         display: inline-block;
         max-width: 518px;
         text-align: center;
-        font-family: sans-serif;
-        font-weight: 800;
+        font-family: Montserrat, sans-serif;
+        font-weight: 900;
         font-size: 64px;
         line-height: 1.25;
         letter-spacing: -0.01em;
         color: #ffffff;
         text-shadow:
-          -3px -3px 0 #000,
-          3px -3px 0 #000,
-          -3px 3px 0 #000,
-          3px 3px 0 #000,
-          0 4px 12px rgba(0, 0, 0, 0.6);
+          -2px -2px 0 #000,
+          2px -2px 0 #000,
+          -2px 2px 0 #000,
+          2px 2px 0 #000,
+          0 3px 10px rgba(0, 0, 0, 0.7);
         white-space: normal;
       }
       [data-composition-id="captions"] .cap-word {
@@ -66,7 +72,7 @@
         const SEGMENTS = [{"words":[{"word":"Top","start":0.14,"end":0.379},{"word":"supplements","start":0.479,"end":0.879},{"word":"recommended","start":0.959,"end":1.419},{"word":"by","start":1.48,"end":1.599}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"Dr.","start":1.639,"end":1.939}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"Rhonda","start":2.039,"end":2.319},{"word":"Patrick.","start":2.419,"end":2.98}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"She","start":3.379,"end":3.519},{"word":"just","start":3.579,"end":3.719},{"word":"said","start":3.759,"end":3.899},{"word":"that","start":3.939,"end":4.019}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"taking","start":4.119,"end":4.38},{"word":"a","start":4.42,"end":4.44},{"word":"standard","start":4.539,"end":4.88},{"word":"multivitamin","start":4.96,"end":5.559}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"every","start":5.699,"end":5.92},{"word":"day","start":5.98,"end":6.199},{"word":"might","start":6.279,"end":6.42},{"word":"actually","start":6.519,"end":6.799}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"slow","start":6.94,"end":7.139},{"word":"down","start":7.219,"end":7.419},{"word":"your","start":7.46,"end":7.559},{"word":"brain's","start":7.599,"end":7.94}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"aging","start":8.079,"end":8.599},{"word":"by","start":8.659,"end":8.76},{"word":"up","start":8.8,"end":8.899},{"word":"to","start":8.92,"end":9.099}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"five","start":9.179,"end":9.519},{"word":"years.","start":9.599,"end":10.059}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"That","start":10.559,"end":10.699},{"word":"sounds","start":10.76,"end":11},{"word":"way","start":11.139,"end":11.439},{"word":"too","start":11.479,"end":11.639}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"easy","start":11.719,"end":11.899},{"word":"to","start":11.939,"end":12},{"word":"be","start":12.039,"end":12.159},{"word":"true.","start":12.239,"end":12.579}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"She","start":13.119,"end":13.22},{"word":"explained","start":13.279,"end":13.639},{"word":"how","start":13.679,"end":13.88},{"word":"simple","start":13.96,"end":14.299}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"everyday","start":14.399,"end":14.719},{"word":"supplements","start":14.859,"end":15.299},{"word":"can","start":15.38,"end":15.539},{"word":"fill","start":15.599,"end":15.739}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"in","start":15.799,"end":15.96},{"word":"major","start":16.02,"end":16.319},{"word":"dietary","start":16.399,"end":16.879},{"word":"gaps","start":16.94,"end":17.439}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"that","start":17.5,"end":17.619},{"word":"most","start":17.68,"end":17.859},{"word":"people","start":17.92,"end":18.159},{"word":"completely","start":18.199,"end":18.76}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"miss.","start":18.879,"end":19.239}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"Her","start":19.799,"end":19.899},{"word":"routine","start":19.979,"end":20.319},{"word":"includes","start":20.359,"end":20.739},{"word":"shifting","start":20.799,"end":21.139}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"focus","start":21.199,"end":21.539},{"word":"toward","start":21.579,"end":21.799},{"word":"high-quality","start":21.859,"end":22.479},{"word":"marine","start":22.559,"end":22.899}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"omega-3s","start":22.979,"end":23.759},{"word":"with","start":24.039,"end":24.119},{"word":"about","start":24.18,"end":24.439},{"word":"two","start":24.5,"end":24.62}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"grams","start":24.719,"end":25},{"word":"of","start":25.059,"end":25.139},{"word":"daily","start":25.199,"end":25.479},{"word":"fish","start":25.539,"end":25.739}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"oil","start":25.819,"end":26.199},{"word":"to","start":26.239,"end":26.339},{"word":"support","start":26.399,"end":26.699},{"word":"long-term","start":26.819,"end":27.26}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"heart","start":27.34,"end":27.519},{"word":"health.","start":27.559,"end":27.879}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"She","start":28.399,"end":28.5},{"word":"also","start":28.579,"end":28.879},{"word":"highlighted","start":28.939,"end":29.359},{"word":"how","start":29.42,"end":29.559}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"adding","start":29.639,"end":29.879},{"word":"basic","start":29.939,"end":30.299},{"word":"nutrients,","start":30.359,"end":30.84},{"word":"like","start":31.139,"end":31.259}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"vitamin","start":31.359,"end":31.659},{"word":"D3","start":31.84,"end":32.339},{"word":"and","start":32.399,"end":32.479},{"word":"magnesium,","start":32.559,"end":33.239}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"helps","start":33.579,"end":33.799},{"word":"support","start":33.84,"end":34.199},{"word":"natural","start":34.259,"end":34.659},{"word":"cellular","start":34.719,"end":35.099}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"repair","start":35.139,"end":35.5},{"word":"throughout","start":35.599,"end":35.88},{"word":"the","start":35.919,"end":36},{"word":"body.","start":36.059,"end":36.419}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"This","start":37,"end":37.139},{"word":"video","start":37.219,"end":37.479},{"word":"is","start":37.52,"end":37.639},{"word":"part","start":37.7,"end":37.819}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"of","start":37.84,"end":37.919},{"word":"my","start":37.959,"end":38.119},{"word":"series","start":38.18,"end":38.459},{"word":"where","start":38.52,"end":38.599}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"I","start":38.659,"end":38.759},{"word":"condense","start":38.799,"end":39.18},{"word":"health","start":39.239,"end":39.459},{"word":"YouTube","start":39.52,"end":39.86}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"videos","start":39.919,"end":40.559},{"word":"so","start":40.639,"end":40.839},{"word":"you","start":40.899,"end":41.099},{"word":"don't","start":41.139,"end":41.339}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"have","start":41.419,"end":41.619},{"word":"to.","start":41.659,"end":41.919}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"Follow","start":42.5,"end":42.719},{"word":"for","start":42.819,"end":42.919},{"word":"more","start":42.979,"end":43.239},{"word":"and","start":43.279,"end":43.419}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"check","start":43.439,"end":43.619},{"word":"the","start":43.639,"end":43.7},{"word":"original","start":43.779,"end":44.099},{"word":"video","start":44.2,"end":44.539}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null},{"words":[{"word":"in","start":44.579,"end":44.659},{"word":"the","start":44.7,"end":44.759},{"word":"description.","start":44.819,"end":45.459}],"fadeInAt":null,"fadeOutAt":null,"hideAt":null}];
         const COMP_DURATION = 45.587;
         const DIM = "rgba(255,255,255,0.55)";
-        const ACTIVE = "#ff3333";
+        const ACTIVE = "#ffffff";
         const SPOKEN = "#ffffff";
         const ACTIVE_SCALE = 1.08;
         const FADE_IN = 0.1;

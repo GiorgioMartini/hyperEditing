@@ -15,6 +15,11 @@ export async function downloadBackdrop(config: PipelineConfig): Promise<StageRes
   const outputPath = artifacts.backdropMp4(config);
 
   try {
+    if (existsSync(outputPath)) {
+      log.dim(`Backdrop already exists — skipping download: ${outputPath}`);
+      return { success: true, output: outputPath };
+    }
+
     const project = await loadAndNormalizeProjectConfig(config.projectDir);
 
     if (!project?.originalUrl) {

@@ -7,9 +7,8 @@ import { artifacts } from '../artifacts.js';
 import { log } from '../utils/logger.js';
 import { PATHS } from '../config.js';
 import {
-  fingerprintAvatar,
-  fingerprintsMatch,
-  readPipelineState,
+  avatarHasChanged,
+  bootstrapPipelineStateIfNeeded,
 } from '../project/resolve-avatar.js';
 import type { PipelineConfig, StageResult } from '../types.js';
 
@@ -20,15 +19,16 @@ export async function transcribeVideo(config: PipelineConfig): Promise<StageResu
   const transcriptPath = artifacts.transcript(config);
 
   try {
+    // Bootstrap state from existing webm + transcript (supports --stage 3 only runs)
+    await bootstrapPipelineStateIfNeeded(config);
+
     if (existsSync(transcriptPath)) {
-      const state = await readPipelineState(config.processedDir);
-      if (state && state.avatarPath === config.inputVideo) {
-        const fp = await fingerprintAvatar(config.inputVideo);
-        if (fingerprintsMatch(fp, state.avatarFingerprint)) {
-          log.dim('Transcript up to date — skipping transcription');
-          return { success: true, output: transcriptPath };
-        }
+      const changed = await avatarHasChanged(config.inputVideo, config.processedDir);
+      if (!changed) {
+        log.dim('Transcript up to date — skipping transcription');
+        return { success: true, output: transcriptPath };
       }
+      log.info('Avatar changed — re-transcribing...');
     }
 
     log.info('Transcribing video with ElevenLabs...');

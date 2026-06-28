@@ -2,11 +2,13 @@ import { readFile, writeFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import { artifacts } from '../artifacts.js';
 import { downloadBrollForBeat } from '../fulfill/download-broll.js';
-import { loadProjectConfig } from '../project/load-project.js';
+import { resolveBrandTokens } from '../brand/resolve-brand.js';
+import { resolveLayoutConfig } from '../brand/resolve-layout.js';
 import {
   generateMotionGraphicComposition,
-  motionConfigFromProject,
+  motionConfigFromBrandTokens,
 } from '../composition/generate-motion-graphic.js';
+import { loadProjectConfig } from '../project/load-project.js';
 import { beatStartTime } from '../utils/transcript-anchor.js';
 import { getVideoDimensions } from '../utils/video-helpers.js';
 import { log } from '../utils/logger.js';
@@ -15,6 +17,7 @@ import type {
   FulfilledBeatsFile,
   PipelineConfig,
   StageResult,
+  Transcript,
   VisualBeat,
   VisualBeatsFile,
 } from '../types.js';
@@ -30,6 +33,11 @@ export async function fulfillAssets(config: PipelineConfig): Promise<StageResult
       await readFile(artifacts.visualBeats(config), 'utf-8'),
     ) as VisualBeatsFile;
 
+    const transcript = JSON.parse(
+      await readFile(artifacts.transcript(config), 'utf-8'),
+    ) as Transcript;
+    const words = transcript.words ?? [];
+
     const fulfilled: FulfilledBeat[] = [];
 
     for (let i = 0; i < beats.length; i++) {
@@ -40,7 +48,7 @@ export async function fulfillAssets(config: PipelineConfig): Promise<StageResult
         const entry = await fulfillBroll(config, beat);
         if (entry) fulfilled.push(entry);
       } else if (beat.type === 'motion-graphic') {
-        const entry = await fulfillMotionGraphic(config, beat);
+        const entry = await fulfillMotionGraphic(config, beat, words);
         if (entry) fulfilled.push(entry);
       }
     }
@@ -95,6 +103,7 @@ async function fulfillBroll(
 async function fulfillMotionGraphic(
   config: PipelineConfig,
   beat: VisualBeat,
+  words: Transcript['words'],
 ): Promise<FulfilledBeat | null> {
   if (!beat.motionGraphic) {
     log.warn(`MG beat ${beat.id} missing motionGraphic spec — skipping`);
@@ -104,16 +113,21 @@ async function fulfillMotionGraphic(
   const outPath = artifacts.motionGraphicHtml(config, beat.id);
   const dimensions = await getVideoDimensions(artifacts.transparentWebm(config));
   const project = await loadProjectConfig(config.projectDir);
-  const motion = motionConfigFromProject(project);
+  const layout = resolveLayoutConfig(project);
+  const brand = resolveBrandTokens(project);
+  const motion = motionConfigFromBrandTokens(brand, project);
 
   await generateMotionGraphicComposition({
     beatId: beat.id,
     duration: beat.duration,
     width: dimensions.width,
     height: dimensions.height,
+    panelHeight: layout.panelHeight,
     spec: beat.motionGraphic,
     outputPath: outPath,
     motion,
+    transcriptWords: words ?? [],
+    beatStart: beatStartTime(beat),
   });
 
   if (!existsSync(outPath)) {

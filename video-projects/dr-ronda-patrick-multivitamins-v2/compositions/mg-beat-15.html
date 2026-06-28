@@ -1,0 +1,205 @@
+<!-- badge-list: numbered pills stagger reveal -->
+<template id="mg-badge-list-template">
+  <div data-composition-id="mg-beat-15" data-start="0" data-width="1080" data-height="960" data-duration="2">
+    <div class="mg-stage">
+      <div class="mg-grid-floor"></div>
+      <div class="mg-panel">
+        <div class="mg-content">
+          <div class="badge-title accent-text" id="badge-title">BODY BENEFITS</div>
+          <div class="badge-wrap"><div class="badge-pill" id="badge-0"><span class="badge-num">1</span>Cells</div>
+        <div class="badge-pill" id="badge-1"><span class="badge-num">2</span>Tissues</div>
+        <div class="badge-pill" id="badge-2"><span class="badge-num">3</span>Organs</div></div>
+        </div>
+      </div>
+      <div class="mg-vignette"></div>
+      <div class="mg-grain"></div>
+    </div>
+    <style>
+      /* Chromatic ghost duplicate layers for word-swap beats */
+[data-composition-id="mg-beat-15"] .ghost-red,
+[data-composition-id="mg-beat-15"] .ghost-cyan {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+}
+[data-composition-id="mg-beat-15"] .ghost-red {
+  color: #ff3333;
+  transform: translate(-4px, 0);
+  mix-blend-mode: screen;
+}
+[data-composition-id="mg-beat-15"] .ghost-cyan {
+  color: #00ffff;
+  transform: translate(4px, 0);
+  mix-blend-mode: screen;
+}
+
+/* Chrome gradient type + halo glow (MOTION_PHILOSOPHY §3.3) */
+[data-composition-id="mg-beat-15"] .chrome-text {
+  font-family: var(--mg-font);
+  font-weight: 800;
+  background: linear-gradient(180deg, var(--mg-chrome-top) 0%, var(--mg-chrome-bottom) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 20px rgba(255,255,255,0.25));
+}
+[data-composition-id="mg-beat-15"] .accent-text {
+  font-family: var(--mg-font);
+  font-weight: 700;
+  color: var(--mg-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 24px var(--mg-glow);
+}
+[data-composition-id="mg-beat-15"] .mg-spark {
+  stroke: var(--mg-accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+/* Upper-card glass panel — no full-screen scrim */
+[data-composition-id="mg-beat-15"] .mg-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 32px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.15) 100%);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 8px 32px rgba(0,0,0,0.4);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+}
+[data-composition-id="mg-beat-15"] .mg-content {
+  position: relative;
+  z-index: 4;
+  text-align: center;
+  width: 100%;
+}
+
+/* Secondary hold motion — underline sweeps, glow pulses */
+[data-composition-id="mg-beat-15"] .mg-underline-sweep {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--mg-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  box-shadow: 0 0 12px var(--mg-accent);
+}
+[data-composition-id="mg-beat-15"] .mg-glow-pulse {
+  animation: none;
+}
+[data-composition-id="mg-beat-15"] .mg-check-pop {
+  color: var(--mg-accent);
+  font-weight: 900;
+  opacity: 0;
+  transform: scale(0);
+}
+
+[data-composition-id="mg-beat-15"] .mg-spark {
+  stroke: var(--mg-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0;
+  transform-origin: center;
+}
+
+/* Stage shell — grid floor + vignette (MOTION_PHILOSOPHY §3.2) */
+[data-composition-id="mg-beat-15"] .mg-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+[data-composition-id="mg-beat-15"] .mg-grid-floor {
+  position: absolute;
+  inset: -20%;
+  transform: perspective(900px) rotateX(58deg) translateY(15%);
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 60px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 60px);
+  background-color: #050505;
+  opacity: 0.7;
+}
+[data-composition-id="mg-beat-15"] .mg-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.85) 100%);
+  z-index: 8;
+}
+[data-composition-id="mg-beat-15"] .mg-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  z-index: 9;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.8) 0 1px, transparent 1px),
+    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.6) 0 1px, transparent 1px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.5) 0 1px, transparent 1px);
+  background-size: 3px 3px, 5px 5px, 7px 7px;
+}
+
+/* Design tokens — brand-aware palette */
+[data-composition-id="mg-beat-15"] {
+  --mg-accent: #ffffff;
+  --mg-accent-secondary: #888888;
+  --mg-font: Montserrat, sans-serif;
+  --mg-font-mono: Roboto Mono, monospace;
+  --mg-bg: #000000;
+  --mg-surface: #111111;
+  --mg-text: #ffffff;
+  --mg-text-dim: #aaaaaa;
+  --mg-chrome-top: #ffffff;
+  --mg-chrome-bottom: #888888;
+  --mg-glow: #ffffff;
+}
+
+
+      [data-composition-id="mg-beat-15"] { position: absolute; inset: 0; pointer-events: none; }
+      [data-composition-id="mg-beat-15"] .badge-title { font-size: 30px; margin-bottom: 20px; opacity: 0; font-family: var(--mg-font-mono); letter-spacing: 0.05em; }
+      [data-composition-id="mg-beat-15"] .badge-wrap { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+      [data-composition-id="mg-beat-15"] .badge-pill { display: flex; align-items: center; gap: 12px; background: var(--mg-surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 12px 24px; font-size: 26px; font-weight: 700; opacity: 0; transform: translateX(-40px); min-width: 280px; }
+      [data-composition-id="mg-beat-15"] .badge-num { font-family: var(--mg-font-mono); color: var(--mg-accent); font-size: 18px; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--mg-accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const compId = "mg-beat-15";
+        const dur = 2;
+        const tl = gsap.timeline({ paused: true });
+        const root = '[data-composition-id="' + compId + '"]';
+
+        tl.fromTo(root + ' .badge-title', { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, 0.15);
+        tl.to(root + ' .mg-grid-floor', { backgroundPositionX: '-=20', duration: dur - 0.5, ease: 'none' }, 0.2);
+
+        const badges = document.querySelectorAll(root + ' .badge-pill');
+        badges.forEach(function (el, i) {
+          tl.fromTo(el, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.38, ease: 'back.out(1.5)' }, 0.35 + i * 0.2);
+          tl.to(el.querySelector('.badge-num'), { scale: 1.15, duration: 0.15, ease: 'power2.out', yoyo: true, repeat: 1 }, 0.5 + i * 0.2);
+        });
+
+        tl.to(root + ' .badge-pill', { x: 4, duration: 0.5, ease: 'sine.inOut', yoyo: true, repeat: 1, stagger: 0.08 }, 1.1);
+        tl.to(root + ' .badge-title', { opacity: 0, duration: 0.25 }, dur - 0.45);
+        tl.to(root + ' .badge-pill', { opacity: 0, x: 20, duration: 0.28, stagger: 0.05, ease: 'power2.in' }, dur - 0.4);
+        tl.set({}, {}, dur);
+        window.__timelines = window.__timelines || {};
+        window.__timelines[compId] = tl;
+      })();
+    </script>
+  </div>
+</template>

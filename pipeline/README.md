@@ -1,6 +1,6 @@
 # AI Video Pipeline
 
-TypeScript pipeline that turns a transparent avatar video into a HyperFrames project.
+TypeScript pipeline that turns a transparent avatar video into a HyperFrames short-form project.
 
 ## Module layout
 
@@ -8,40 +8,37 @@ TypeScript pipeline that turns a transparent avatar video into a HyperFrames pro
 pipeline/src/
   index.ts              CLI entry + stage registry
   artifacts.ts          All processed/ and output paths
-  types.ts              Shared types (VisualBeat, FulfilledBeat, etc.)
-  clean.ts              --clean handler
-  config.ts             Env vars + workspace paths
-  project/
-    load-project.ts     project.json loader + URL normalization
-    resolve-avatar.ts   Avatar discovery, fingerprint, invalidation
-    avatar-pipeline.ts  Legacy transcript migration + re-exports
+  types.ts              Shared types (VisualBeat, LayoutConfig, BrandConfig, etc.)
+  brand/
+    presets.ts          dark-chrome, social-navy brand tokens
+    resolve-brand.ts    Merge preset + project.json overrides
+    resolve-layout.ts   Layout mode defaults (short-form-split)
+    resolve-motion.ts   Beat density + planning config
   stages/
     avatar-prep.ts      Stage 1
     backdrop-download.ts Stage 2
     transcribe.ts       Stage 3
-    plan-visual-beats.ts Stage 4 (Gemini + anchor resolution)
+    plan-visual-beats.ts Stage 4 (dense Gemini planning + auto-replan)
     fulfill-assets.ts   Stage 5
-    compose.ts          Stage 6 orchestrator
-  fulfill/
-    download-broll.ts   Pexels download + cache
+    compose.ts          Stage 6 orchestrator + quality gate
   composition/
-    generate-index.ts   Root index.html (upper-card MG layout)
+    generate-index.ts   Root index.html (split layout + legacy modes)
     generate-captions.ts
     generate-meta.ts
-    generate-motion-graphic.ts
+    generate-brand-tokens.ts
+    generate-scaffold.ts       ambient-bg + seam-treatment
+    generate-scene-transitions.ts  CSS push between beats
+    generate-motion-graphic.ts  12 recipe templates
+    face-mode-schedule.ts  BOTTOM/FULLSCREEN + seam windows
   utils/
-    video-helpers.ts
-    caption-chunks.ts
-    caption-timing.ts   Non-overlapping caption windows
-    transcript-anchor.ts  Phrase → timestamp resolution
-    validate-beats.ts   Beat overlap / anchor validation
-    logger.ts
-templates/mg/
-  _shared/              tokens, grid, chrome type, glass panel CSS
-  stat-callout.html
-  stat-slam.html
-  kinetic-type.html
-  list-reveal.html
+    caption-timing.ts
+    transcript-anchor.ts
+    beat-internal-timing.ts  Word-sync inside MG beats
+    validate-beats.ts
+    validate-motion-quality.ts  Density + hero coverage gate
+templates/
+  mg/                   12 motion graphic recipes + _shared CSS
+  scaffold/             ambient-bg, seam-treatment, scene-transition
 ```
 
 ## Artifacts
@@ -50,83 +47,69 @@ templates/mg/
 |------|----------|----------|
 | `visual-beats.json` | Stage 4 | Stage 5 |
 | `fulfilled-beats.json` | Stage 5 | Stage 6 |
-| `processed/broll-<id>.mp4` | Stage 5 | Stage 6 |
+| `assets/brand-tokens.css` | Stage 6 | All compositions |
+| `compositions/ambient-bg.html` | Stage 6 | index.html |
+| `compositions/seam-treatment.html` | Stage 6 | index.html |
 | `compositions/mg-<id>.html` | Stage 5 | Stage 6 |
+| `compositions/trans-*.html` | Stage 6 | index.html (split layout) |
 
 ## Visual beat types
 
-- **broll** — Pexels stock footage (PiP, bottom-right)
-- **motion-graphic** — GSAP template from `templates/mg/` (upper-card by default)
+- **broll** — Pexels stock footage (top panel in split layout; PiP in backdrop-pip mode)
+- **motion-graphic** — GSAP recipe from `templates/mg/` (top-half or fullscreen)
 
 ## Beat sync (pipeline-wide)
 
-1. Gemini returns `anchorPhrase` per beat (exact script words)
-2. `transcript-anchor.ts` resolves phrase → `resolvedTimestamp` from word JSON
-3. `validate-beats.ts` checks overlaps and missing anchors
-4. `generate-index.ts` uses resolved times for `data-start`
+1. Gemini returns `anchorPhrase` + template + props per beat
+2. `transcript-anchor.ts` resolves phrase → `resolvedTimestamp`
+3. `beat-internal-timing.ts` resolves payoff/setup words → local GSAP times inside MG beats
+4. `validate-beats.ts` + `validate-motion-quality.ts` check overlaps, density, hero coverage
+5. Stage 4 auto-replans once if quality gate fails on sparse gaps
+
+## Layout: short-form-split (default)
+
+```
+Track 0: face-wrapper + face video (Ken Burns, color grade)
+Track 1: MG + B-roll scenes + CSS transitions (back-to-back)
+Track 2: captions (bottom placement)
+Track 3: ambient-bg
+Track 4: audio
+Track 5: seam-treatment
+```
+
+Face modes switch 0.15s before beat boundaries. Seam visible during BOTTOM mode.
 
 ## Avatar input
 
-Default location: `video-projects/<project>/avatar/avatar.mov`
+Default: `video-projects/<project>/avatar/avatar.mov`
 
-Resolution order (no `--input`):
-
-1. `avatar/avatar.{mov,mp4,webm}`
-2. Single video file in `avatar/` (if only one)
-3. Legacy `source/avatar.mov` (deprecated)
-
-Relative `--input` paths resolve from the **project folder**, not the repo root.
-
-Change detection: `processed/.pipeline-state.json` stores avatar fingerprint; changed files trigger invalidation of WebM, transcript, beats, and generated HTML (backdrop preserved).
-
-Transcript path: `processed/transcripts/avatar.json` when input is under project `avatar/`.
+See [`../PIPELINE.md`](../PIPELINE.md) for full usage.
 
 ## Development
 
 ```bash
 cd pipeline
 npm install
-npm run pipeline -- --project test --input ../path/to/avatar.mov --stage 1
-npx tsc --noEmit   # typecheck
+npx tsc --noEmit
 ```
 
 ## Customization
 
-- Beat planning prompt: `stages/plan-visual-beats.ts`
-- Anchor resolution: `utils/transcript-anchor.ts`
-- Pexels logic: `fulfill/download-broll.ts`
-- Layer stack: `composition/generate-index.ts`
-- MG templates: `templates/mg/*.html` + `_shared/`
+- Beat planning: `stages/plan-visual-beats.ts`
+- Brand presets: `brand/presets.ts` + [`BRAND.md`](BRAND.md)
+- MG recipes: `templates/mg/*.html`
+- Scaffold: `templates/scaffold/*.html`
 - Motion design refs: [`MOTION_DEFAULTS.md`](MOTION_DEFAULTS.md)
-- **Captions styling:** `composition/generate-captions.ts` + `utils/caption-timing.ts`
 
-### Caption defaults
+## project.json example
 
-| Setting | Default | Notes |
-|---------|---------|-------|
-| `fontSize` | 64px | Larger type for vertical short-form |
-| `maxWidthRatio` | 0.48 | Narrower box → 2+ lines when chunks are long |
-| `maxWordsPerChunk` | 4 | Word grouping per segment |
-| `activeColor` | `#ff3333` | Spoken-word highlight |
-| `pauseThresholdSec` | 0.35 | New chunk after this pause |
-| `interSegmentGapSec` | 0.15 | Gap between consecutive lines |
-
-### Motion defaults
-
-| Setting | Default | Notes |
-|---------|---------|-------|
-| `accentColor` | `#ff3333` | MG accent / glow |
-| `fontFamily` | `Montserrat, sans-serif` | MG typography |
-| `layout` | `upper-card` | Speaker visible during MG |
-
-Per-project overrides: `project.json` → `captions` / `motion` (see [`PIPELINE.md`](../PIPELINE.md)).
-
-## Verification
-
-After any pipeline run:
-
-1. `npx hyperframes lint` in the project folder
-2. Preview `?comp=captions` and each `?comp=mg-beat-N`
-3. Draft render + frame check at anchor phrase timestamps
-
-Full checklist: [`MOTION_DEFAULTS.md`](MOTION_DEFAULTS.md).
+```json
+{
+  "layout": { "mode": "short-form-split" },
+  "brand": { "preset": "social-navy" },
+  "motion": {
+    "beatIntervalSec": 2.5,
+    "jawDropperEverySec": 5
+  }
+}
+```

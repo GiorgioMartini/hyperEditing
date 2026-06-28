@@ -18,6 +18,10 @@ export interface CaptionsConfig {
   postHoldSec?: number;
   fadeInSec?: number;
   fadeOutSec?: number;
+  /** center = mid-screen; bottom = above face in split layout */
+  placement?: 'center' | 'bottom';
+  bottomOffset?: number;
+  fontFamily?: string;
 }
 
 /**
@@ -42,9 +46,38 @@ export function generateCaptionsHtml(
     postHoldSec,
     fadeInSec,
     fadeOutSec,
+    placement = 'center',
+    bottomOffset = 220,
+    fontFamily = 'Montserrat, sans-serif',
   } = config;
 
   const capMaxWidth = Math.round(width * maxWidthRatio);
+
+  const stagePositionCss =
+    placement === 'bottom'
+      ? `
+        bottom: ${bottomOffset}px;
+        top: auto;
+        transform: none;
+        height: auto;
+      `
+      : `
+        top: 50%;
+        transform: translateY(-50%);
+        height: 0;
+      `;
+
+  const lineWrapCss =
+    placement === 'bottom'
+      ? `
+        top: auto;
+        bottom: 0;
+        transform: none;
+      `
+      : `
+        top: 50%;
+        transform: translateY(-50%);
+      `;
 
   const timingOpts: CaptionTimingOptions = {
     interSegmentGapSec,
@@ -93,17 +126,14 @@ export function generateCaptionsHtml(
         position: absolute;
         left: 0;
         right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 0;
         pointer-events: none;
+        ${stagePositionCss}
       }
       [data-composition-id="captions"] .cap-line-wrap {
         position: absolute;
-        top: 50%;
         left: 0;
         right: 0;
-        transform: translateY(-50%);
+        ${lineWrapCss}
         display: flex;
         justify-content: center;
         padding: 0 48px;
@@ -114,18 +144,18 @@ export function generateCaptionsHtml(
         display: inline-block;
         max-width: ${capMaxWidth}px;
         text-align: center;
-        font-family: sans-serif;
-        font-weight: 800;
+        font-family: ${fontFamily};
+        font-weight: 900;
         font-size: ${fontSize}px;
         line-height: 1.25;
         letter-spacing: -0.01em;
         color: #ffffff;
         text-shadow:
-          -3px -3px 0 #000,
-          3px -3px 0 #000,
-          -3px 3px 0 #000,
-          3px 3px 0 #000,
-          0 4px 12px rgba(0, 0, 0, 0.6);
+          -2px -2px 0 #000,
+          2px -2px 0 #000,
+          -2px 2px 0 #000,
+          2px 2px 0 #000,
+          0 3px 10px rgba(0, 0, 0, 0.7);
         white-space: normal;
       }
       [data-composition-id="captions"] .cap-word {
