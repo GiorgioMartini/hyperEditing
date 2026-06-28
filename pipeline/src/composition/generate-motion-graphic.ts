@@ -76,6 +76,30 @@ export interface GenerateMotionGraphicOptions {
   transparentStage?: boolean;
 }
 
+const CHROME_TEXT_STROKE = `color: #ffffff;
+  -webkit-text-stroke: 3px #000000;
+  paint-order: stroke fill;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.45);
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  filter: none;`;
+
+const PANEL_GLASS = {
+  background:
+    'linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.15) 100%)',
+  border: '1px solid rgba(255,255,255,0.12)',
+  shadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 8px 32px rgba(0,0,0,0.4)',
+  backdrop: 'blur(12px) saturate(1.1)',
+};
+
+const PANEL_BACKDROP = {
+  background: 'transparent',
+  border: 'none',
+  shadow: 'none',
+  backdrop: 'none',
+};
+
 async function loadSharedStyles(
   motion: MotionConfig,
   compositionId: string,
@@ -99,7 +123,12 @@ async function loadSharedStyles(
         .replaceAll('{{stageBackground}}', transparentStage ? 'transparent' : '#000')
         .replaceAll('{{gridFloorBackground}}', transparentStage ? 'transparent' : '#050505')
         .replaceAll('{{gridFloorOpacity}}', transparentStage ? '0.45' : '0.7')
-        .replaceAll('{{vignetteMidOpacity}}', transparentStage ? '0.45' : '0.85');
+        .replaceAll('{{vignetteMidOpacity}}', transparentStage ? '0' : '0.85')
+        .replaceAll('{{chromeTextFill}}', CHROME_TEXT_STROKE)
+        .replaceAll('{{panelBackground}}', (transparentStage ? PANEL_BACKDROP : PANEL_GLASS).background)
+        .replaceAll('{{panelBorder}}', (transparentStage ? PANEL_BACKDROP : PANEL_GLASS).border)
+        .replaceAll('{{panelShadow}}', (transparentStage ? PANEL_BACKDROP : PANEL_GLASS).shadow)
+        .replaceAll('{{panelBackdropFilter}}', (transparentStage ? PANEL_BACKDROP : PANEL_GLASS).backdrop);
       combined += css + '\n';
     }
   } catch {

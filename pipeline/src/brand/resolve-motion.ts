@@ -5,7 +5,7 @@ export const DEFAULT_MOTION_PLANNING: MotionPlanningConfig = {
   minBeatDuration: 1.5,
   maxBeatDuration: 4.0,
   jawDropperEverySec: 5,
-  useRegistryTransitions: false,
+  useRegistryTransitions: true,
 };
 
 export function resolveMotionPlanning(project: ProjectConfig | null): MotionPlanningConfig {

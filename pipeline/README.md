@@ -86,7 +86,7 @@ Stages 4–6 always run. Re-run 4→5→6 after pipeline code changes without re
 
 ```
 Track 0: face-wrapper + face video (Ken Burns, color grade)
-Track 1: MG + B-roll scenes + CSS transitions (back-to-back)
+Track 1: MG + B-roll scenes (hard cuts by default; optional CSS push via `motion.useRegistryTransitions: false`)
 Track 2: captions (bottom placement)
 Track 3: ambient-bg
 Track 4: audio

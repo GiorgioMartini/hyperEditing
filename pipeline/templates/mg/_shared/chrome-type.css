@@ -1,12 +1,8 @@
-/* Chrome gradient type + halo glow (MOTION_PHILOSOPHY §3.3) */
+/* Headline type — gradient on dark stage, stroked solid on YouTube backdrop */
 [data-composition-id="{{compositionId}}"] .chrome-text {
   font-family: var(--mg-font);
   font-weight: 800;
-  background: linear-gradient(180deg, var(--mg-chrome-top) 0%, var(--mg-chrome-bottom) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 20px rgba(255,255,255,0.25));
+  {{chromeTextFill}}
 }
 [data-composition-id="{{compositionId}}"] .accent-text {
   font-family: var(--mg-font);
