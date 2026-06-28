@@ -123,7 +123,7 @@ The CLI reads `hyperframes.json`/`meta.json` from the current directory and reso
 4. Pull in any shared brand assets the project needs (e.g. `cp ../../assets/brand-tokens.css ../../assets/AIS\ Logo\ PNG.png assets/`)
 5. Build the composition; lint + render from inside this folder
 
-**Alternative — AI pipeline:** `npm run pipeline -- --project <slug> --input path/to/avatar.mov` scaffolds backdrop, captions (64px / 48% width default), B-roll, and MG. See `PIPELINE.md`. Pipeline output still goes through the same lint → preview → render loop above.
+**Alternative — AI pipeline:** `npm run pipeline -- --project <slug>` scaffolds a **short-form-split** project (top-half MG, bottom-half face, ambient bg, seam, face modes), brand tokens, backdrop, speech-anchored captions, B-roll, and 12-recipe MG. Default avatar path: `avatar/avatar.mov`. Stages 1–3 skip when cached artifacts exist. See `PIPELINE.md`. Pipeline output still goes through the same lint → preview → render loop above.
 
 ### What lives at the workspace root
 
@@ -131,7 +131,7 @@ The CLI reads `hyperframes.json`/`meta.json` from the current directory and reso
 - Shared brand source-of-truth: `DESIGN.ais-example.md` (AIS brand spec — kept as a worked example; students should write their own `DESIGN.md` for their brand), root `assets/` (AIS Logo PNG, brand-tokens.css, AIS Background.png) — copy into a project's `assets/` when needed
 - Shared raw-recording stash: large source MP4s/MP3s that aren't yet assigned to a project (e.g. raw lesson recordings, license-free music) can sit at root until they're moved into a project's `assets/`
 - Tooling: `node_modules/`, `package.json`, `.claude/`, `.gitignore`, `skills-lock.json`
-- **AI video pipeline:** `pipeline/` (TypeScript stages + MG templates), `PIPELINE.md` (quick start). Does not invoke `.claude/skills/` — skills are for manual authoring only.
+- **AI video pipeline:** `pipeline/` (TypeScript stages + 12 MG recipes + brand system), `PIPELINE.md` (quick start), `pipeline/MOTION_DEFAULTS.md`, `pipeline/BRAND.md`. Does not invoke `.claude/skills/` — skills are for manual authoring only.
 
 ## Render Contract (the must-dos and must-not-dos)
 

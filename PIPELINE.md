@@ -88,6 +88,17 @@ Stages skip expensive work when cached artifacts are still valid:
 
 Stage 3 bootstraps `processed/.pipeline-state.json` from existing webm + transcript so `--stage 3` alone still skips correctly.
 
+**Typical iteration loop** after changing pipeline sync or MG templates (keeps transcript + backdrop):
+
+```bash
+npm run pipeline -- --project my-video-001 --stage 4
+npm run pipeline -- --project my-video-001 --stage 5
+npm run pipeline -- --project my-video-001 --stage 6
+cd video-projects/my-video-001 && npx hyperframes preview
+```
+
+Use `--clean` only when you need to force re-download backdrop or clear all derived artifacts.
+
 ## Captions
 
 Stage 6 generates `compositions/captions.html` — karaoke captions with per-word highlight.
@@ -125,8 +136,12 @@ Stage 4 plans visual beats **only within the spoken-word window** (first word �
 4. Beat **duration** is phrase-locked: ends shortly after the anchor phrase is spoken
 5. Beats starting after speech ends are filtered out
 6. Overlaps **trim** the previous beat instead of shifting forward into silence
+7. Unresolvable overlaps **drop** the later beat (never push into post-speech silence)
+8. Stage 4 **auto-replans once** if motion quality gate detects sparse gaps during speech
 
-Re-run beat planning after transcript changes:
+Composition **duration** ends at the speech window (+ small hold), not the full avatar file length — trailing silence after the speaker stops is not filled with MG.
+
+Re-run beat planning after transcript or pipeline code changes:
 
 ```bash
 npm run pipeline -- --project my-video-001 --stage 4

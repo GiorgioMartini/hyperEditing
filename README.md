@@ -1,6 +1,6 @@
 # Hyperframes Editor — Student Edition
 
-A workbench for building motion-graphics video pipelines in **plain HTML + GSAP**, powered by [Hyperframes](https://hyperframes.heygen.com). Twelve finished video projects you can clone, scrub through, rip apart, and rebuild as your own.
+A workbench for building motion-graphics video pipelines in **plain HTML + GSAP**, powered by [Hyperframes](https://hyperframes.heygen.com). Fourteen example video projects (plus pipeline-generated samples) you can clone, scrub through, rip apart, and rebuild as your own.
 
 > This is **not** a Remotion / React / Next.js video stack. Every composition in this repo is a regular HTML file with a paused GSAP timeline attached to `window.__timelines`. The Hyperframes CLI handles lint, preview, and render.
 
@@ -27,9 +27,8 @@ git clone <your-fork-url> hyperframes-editor
 cd hyperframes-editor
 npm install
 
-# Optional — only if you want to use the ClickUp / OpenAI integrations
-cp .env.example .env
-# ...then edit .env with your own keys
+# Optional — only if you use the AI pipeline or ClickUp / OpenAI integrations
+# Create .env at repo root with keys from PIPELINE.md (GEMINI, PEXELS, ELEVENLABS, etc.)
 
 # Open Studio on one of the included projects
 cd video-projects/may-shorts-19
@@ -44,7 +43,7 @@ Studio hot-reloads on file save. Scrub the timeline, inspect scenes, change colo
 hyperframes-editor/
 ├── README.md                    ← you are here
 ├── LICENSE                      ← MIT (see note on brand assets)
-├── .env.example                 ← copy to .env, fill in your own keys
+├── .env                         ← gitignored; API keys for pipeline / integrations
 ├── CLAUDE.md                    ← full workspace guide for Claude Code users
 ├── AGENTS.md                    ← agent-delegation notes
 ├── MOTION_PHILOSOPHY.md         ← the motion aesthetic this repo aspires to
@@ -62,7 +61,7 @@ hyperframes-editor/
 │   ├── launch.json
 │   └── skills/                  ← /hyperframes, /gsap, /make-a-video, etc.
 ├── package.json
-└── video-projects/              ← the 13 projects
+└── video-projects/              ← 14 example projects (+ your own)
     └── <project>/
         ├── index.html           ← root composition entry
         ├── compositions/        ← sub-comps loaded via data-composition-src
@@ -74,7 +73,7 @@ hyperframes-editor/
         └── (STORYBOARD.md, HANDOFF.md, NOTES.md as applicable)
 ```
 
-## The 12 projects, at a glance
+## The 14 projects, at a glance
 
 Start by opening each `final.mp4` to see the target, then open `index.html` to see how it's built.
 
@@ -83,6 +82,7 @@ Start by opening each `final.mp4` to see the target, then open `index.html` to s
 |---|---|
 | `may-shorts-19` | TikTok-style talking-head + motion graphics + karaoke captions. This one has the most polish — the `/short-form-video` skill was written around it. |
 | `may-shorts-18` | Earlier short in the same series. Compare v2 vs may-shorts-19 to see what got refined. |
+| `dr-ronda-patrick-multivitamins-v2` | **Pipeline-generated** 9:16 short — avatar + backdrop + captions + B-roll + MG via `npm run pipeline`. Good reference for what the automated path produces vs hand-authored `may-shorts-19`. |
 
 ### Short-form landscape (16:9)
 | Project | What it is |
@@ -161,17 +161,25 @@ Replace each hit either with the matching CSS custom prop from your new `brand-t
 
 ### Or: generate from an avatar video (pipeline)
 
-If you have a HeyGen (or similar) transparent avatar recording and want backdrop + captions + B-roll + motion graphics assembled automatically:
+If you have a HeyGen (or similar) avatar recording and want backdrop + captions + B-roll + motion graphics assembled automatically:
 
 ```bash
-mkdir -p video-projects/my-video-001/source
-# drop avatar.mov in source/, or pass --input explicitly
-npm run pipeline -- --project my-video-001 --input path/to/avatar.mov
+mkdir -p video-projects/my-video-001/avatar
+# drop avatar.mov in avatar/, or pass --input explicitly
+npm run pipeline -- --project my-video-001
 cd video-projects/my-video-001
 npx hyperframes preview
 ```
 
-Configure YouTube backdrop URL and caption options in `video-projects/my-video-001/project.json`. Full reference: [`PIPELINE.md`](PIPELINE.md).
+Configure YouTube backdrop URL, brand, layout, and caption options in `video-projects/my-video-001/project.json`. Full reference: [`PIPELINE.md`](PIPELINE.md), [`pipeline/MOTION_DEFAULTS.md`](pipeline/MOTION_DEFAULTS.md), [`pipeline/BRAND.md`](pipeline/BRAND.md).
+
+**Pipeline defaults (2026-06):**
+
+- **Layout:** `short-form-split` — MG/B-roll in top half, face in bottom half, ambient grid, seam treatment, face-mode choreography (matches `may-shorts-19` structure)
+- **Brand:** `dark-chrome` preset (or `social-navy`, `custom`) → writes `assets/brand-tokens.css`
+- **Motion graphics:** 12 GSAP recipe templates; Gemini picks template + props + verbatim `anchorPhrase`
+- **Sync:** beats planned only within the **speech window** (first word → last word); timing resolved from transcript anchors, not LLM timestamps
+- **Stage skip caching:** stages 1–3 skip when webm, backdrop, and transcript already exist and avatar unchanged — re-run `--stage 4` through `--stage 6` to pick up pipeline code changes without re-transcribing
 
 Default captions: **64px** type, **48%** frame width max (multi-line wrap), up to **4 words** per chunk, red active-word highlight.
 

@@ -74,8 +74,11 @@ hyperframes-student-kit/          ← repo root (workspace)
 │   └── ...
 ├── docs/                         ← sparse design/plan artifacts
 ├── pipeline/                     ← AI avatar → HyperFrames pipeline (see PIPELINE.md)
-│   ├── src/                      ← stages, composition generators, artifacts
-│   └── templates/mg/             ← motion-graphic HTML templates
+│   ├── src/                      ← stages, composition generators, brand/, utils/
+│   ├── templates/mg/             ← 12 motion-graphic recipe templates
+│   ├── templates/scaffold/       ← ambient-bg, seam-treatment, scene-transition
+│   ├── MOTION_DEFAULTS.md        ← layout defaults, MG catalog, verification checklist
+│   └── BRAND.md                  ← brand presets (dark-chrome, social-navy, custom)
 ├── PIPELINE.md                   ← pipeline quick start + project.json reference
 ├── .claude/
 │   ├── launch.json               ← VS Code debug: hyperframes preview
@@ -197,20 +200,38 @@ Automated path from HeyGen avatar footage → full HyperFrames project (backdrop
 
 ```bash
 # From repo root — see PIPELINE.md for full options
-npm run pipeline -- --project my-video-001 --input path/to/avatar.mov
+npm run pipeline -- --project my-video-001
 cd video-projects/my-video-001 && npx hyperframes preview
 ```
 
-| Stage | Output |
-|-------|--------|
-| 1 Avatar prep | `processed/01-transparent.webm` (skips if already present) |
-| 2 Backdrop | `processed/00-backdrop.mp4` from `project.json` `originalUrl` |
-| 3 Transcribe | `processed/transcripts/<stem>.json` |
-| 4 Plan beats | `processed/visual-beats.json` |
-| 5 Fulfill | B-roll MP4s + `compositions/mg-*.html` |
-| 6 Compose | `index.html`, `compositions/captions.html`, meta files |
+Default avatar input: `video-projects/<project>/avatar/avatar.mov` (legacy `source/avatar.mov` still works).
+
+| Stage | Output | Skip when |
+|-------|--------|-----------|
+| 1 Avatar prep | `processed/01-transparent.webm` | WebM already exists |
+| 2 Backdrop | `processed/00-backdrop.mp4` from `project.json` `originalUrl` | Backdrop file already exists |
+| 3 Transcribe | `processed/transcripts/avatar.json` | Transcript exists and avatar fingerprint unchanged |
+| 4 Plan beats | `processed/visual-beats.json` | — (always runs) |
+| 5 Fulfill | B-roll MP4s + `compositions/mg-*.html` | — (always runs) |
+| 6 Compose | `index.html`, scaffold, `assets/brand-tokens.css`, captions | — (always runs) |
+
+**Layout default:** `short-form-split` — top-half MG/B-roll scenes, face in bottom half, ambient background, seam treatment, face-mode choreography (BOTTOM ↔ FULLSCREEN). Legacy modes: `upper-card`, `backdrop-pip`.
+
+**Motion graphics sync (speech-bounded):** Stage 4 plans beats only within the spoken-word window (first word → last word). Beat budget uses speech duration, not full video length. Gemini supplies verbatim `anchorPhrase` values; `transcript-anchor.ts` resolves exact timestamps (exact → numeric → prefix match). Beats with no anchor are dropped; overlaps trim the previous beat instead of shifting forward into silence. Composition duration ends shortly after the last spoken word.
+
+**Brand system:** `project.json` → `brand.preset` (`dark-chrome`, `social-navy`, `custom`) generates `assets/brand-tokens.css`. See `pipeline/BRAND.md`.
+
+**12 MG recipes** in `pipeline/templates/mg/` — Gemini picks template + props semantically. CSS scene transitions between beats in split layout.
 
 **Caption defaults** (override in `project.json` → `captions`): 64px font, max width 48% of frame (`maxWidthRatio: 0.48`), 4 words per chunk, red active word. Generator: `pipeline/src/composition/generate-captions.ts`.
+
+**Re-run after pipeline code changes** (without re-transcribing):
+
+```bash
+npm run pipeline -- --project my-video-001 --stage 4
+npm run pipeline -- --project my-video-001 --stage 5
+npm run pipeline -- --project my-video-001 --stage 6
+```
 
 Pipeline does **not** invoke `.claude/skills/` — skills remain for manual/agent authoring only.
 
@@ -271,7 +292,9 @@ Most projects need **no API keys** for local lint/preview/render.
 | `DESIGN.ais-example.md` | Template for per-project `DESIGN.md` |
 | `CLAUDE.md` | Render contract, workspace rules, registry list, visual verification |
 | `README.md` | Human quickstart, project table, brand swap guide |
-| `PIPELINE.md` | AI avatar pipeline: stages, `project.json`, caption options |
+| `PIPELINE.md` | AI avatar pipeline: stages, skip caching, speech-bounded sync, `project.json` |
+| `pipeline/MOTION_DEFAULTS.md` | Pipeline layout defaults, 12 MG recipes, verification checklist |
+| `pipeline/BRAND.md` | Brand presets and per-video taste via `project.json` |
 | Per-project `HANDOFF.md` / `STORYBOARD.md` | Project-specific decisions and footguns |
 
 ---
@@ -360,4 +383,4 @@ If the user mentions "video-use and hyperframes" as packages for code-based vide
 
 ---
 
-*Last updated: 2026-06-25 — includes AI video pipeline + caption defaults.*
+*Last updated: 2026-06-28 — speech-bounded MG sync, short-form-split default, stage skip caching, brand system.*

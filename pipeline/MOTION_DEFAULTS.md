@@ -56,6 +56,19 @@ Shared CSS partials live in `templates/mg/_shared/` (grid, chrome type, glass pa
 
 Scaffold compositions: `templates/scaffold/` (ambient-bg, seam-treatment, scene-transition).
 
+## Speech-bounded timing
+
+Motion graphics appear only while the speaker is talking:
+
+| Concept | Source | Behavior |
+|---------|--------|----------|
+| Speech window | `getSpeechWindow()` in `transcript-anchor.ts` | First spoken word start → last spoken word end |
+| Beat budget | `computeBeatBudget(speechDuration, …)` | ~1 beat per 2.5s of **speech**, not full video length |
+| Anchor phrase | Gemini → `anchorPhrase` field | Must match transcript verbatim; code resolves exact timestamp |
+| Phrase match | `findPhraseMatch()` | exact → numeric (`5`/`five`) → prefix (min 2 words) |
+| Overlap policy | `resolveBeatTimings()` | Trim previous beat; drop later beat if unresolvable |
+| Composition end | Stage 6 compose | Duration = speech end + small hold — no MG in trailing silence |
+
 ## Verification checklist (every video)
 
 After `npm run pipeline`:
@@ -67,6 +80,7 @@ After `npm run pipeline`:
    - Ambient grid visible (not flat black/navy)
    - Seam feather at y=960 during bottom-half modes
    - No overlapping caption lines during fast speech
+   - No MG or B-roll after the last spoken word (composition ends at speech + hold)
    - MG appears when anchor phrase is spoken (±0.2s)
    - Visual beat every ≤3.5s; hero beat every ~5s
 4. Draft render + frame extraction at anchor timestamps

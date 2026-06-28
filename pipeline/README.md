@@ -60,11 +60,27 @@ templates/
 
 ## Beat sync (pipeline-wide)
 
-1. Gemini returns `anchorPhrase` + template + props per beat
-2. `transcript-anchor.ts` resolves phrase → `resolvedTimestamp`
-3. `beat-internal-timing.ts` resolves payoff/setup words → local GSAP times inside MG beats
-4. `validate-beats.ts` + `validate-motion-quality.ts` check overlaps, density, hero coverage
-5. Stage 4 auto-replans once if quality gate fails on sparse gaps
+Timing split: **WHAT** (Gemini) / **WHEN** (`transcript-anchor.ts`) / **HOW** (MG templates).
+
+1. Gemini returns `anchorPhrase` (verbatim from transcript) + template + props per beat
+2. `getSpeechWindow()` bounds planning to first spoken word → last spoken word
+3. `transcript-anchor.ts` resolves phrase → `resolvedTimestamp` (exact → numeric → prefix match)
+4. Beat **duration** is phrase-locked: starts ~0.15s before anchor, ends after phrase is spoken
+5. Overlaps **trim** the previous beat; unresolvable overlaps **drop** the later beat
+6. Beats with no matching anchor are **dropped** (no LLM timestamp fallback)
+7. `beat-internal-timing.ts` resolves payoff/setup words → local GSAP times inside MG beats
+8. `validate-beats.ts` + `validate-motion-quality.ts` check overlaps, density, hero coverage, post-speech bounds
+9. Stage 4 auto-replans once if quality gate fails on sparse gaps during speech
+
+## Stage skip caching
+
+| Stage | Skip when |
+|-------|-----------|
+| 1 Avatar prep | `processed/01-transparent.webm` exists |
+| 2 Backdrop | `processed/00-backdrop.mp4` exists |
+| 3 Transcribe | Transcript exists and avatar fingerprint unchanged |
+
+Stages 4–6 always run. Re-run 4→5→6 after pipeline code changes without re-transcribing.
 
 ## Layout: short-form-split (default)
 

@@ -110,7 +110,7 @@ Copy `assets/brand-tokens.css` values from your DESIGN.md into `project.json` fo
 
 ## Migration from legacy pipeline output
 
-Existing projects without `layout.mode` default to **`short-form-split`**. To keep the old look:
+Existing projects without `layout.mode` default to **`short-form-split`** on the next `--stage 6` run. To keep the old look:
 
 ```json
 { "layout": { "mode": "upper-card" } }
